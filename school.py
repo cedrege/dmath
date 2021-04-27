@@ -146,3 +146,5 @@ def ewfin(n: int, p: float):
     tl = [[str(x) for x in range(n+1)], arr2, cumsum(arr2)]
     print(DataFrame(tl, index=["Xi", "P(x = Xi)", "sum(P(x))"], columns=[str(" ") for x in range(n+1)]))
     print(f"\nErwartungswert: {sum(arr2)}")
+ 
+ 
