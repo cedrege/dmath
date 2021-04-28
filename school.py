@@ -221,7 +221,50 @@ def euclid_ggt_extended(a: int, b: int, steps = False) -> int:
     return d1
 
 def euler_phi(n: int, steps=False, primfac_steps=False) -> int:
-    """ Implementation der Eulerischen Phi Funktion mit steps
+    """ Implementation der Eulerischen Phi Funktion mit steps. Zeigt nur die Anzahl der Elemente.
+        Wenn die Menge der Zahlen auch wichtig ist "euler_phi_set" nutzen!
+    
+    Args:
+      n: Inteager Zahl
+      steps: Wenn True, zeigt Schritte auf
+      primfac_steps: Wenn True, zeigt zusaetzlich Schritte fuer Primfaktorzerlegung an
+
+    Returns:
+      Anzahl Element der Eulerischen Phi Funktion fuer n
+    """
+    prime_factors = prime_facs(n, primfac_steps)
+
+    if n < 2:
+        if steps:
+            display(Math(f"\Phi(n < 2) = 1"))
+        return 1
+
+    if len(prime_factors) == 1:
+        if steps:
+            display(Math(f"\Phi(p) = p - 1 \Rightarrow \Phi({n}) = {n - 1}"))
+        return n - 1
+    else:
+        last_value = 0
+        base_value = 1
+        stepsstr = []
+        for i in sorted(prime_factors):
+            if i == last_value:
+                continue
+            else:
+                last_value = i
+                base_value *= (i - 1) * i**(prime_factors.count(i) - 1)
+                if steps:
+                    stepsstr.append(f"({i - 1}) \cdot {i}^{{{prime_factors.count(i) - 1}}}")
+        
+        stepsstr_n = '\cdot'.join(stepsstr)
+        display(Math(f"\Phi(n) = {stepsstr_n} = {base_value}"))
+
+    return base_value
+
+def euler_phi_set(n: int, steps=False, primfac_steps=False) -> int:
+    """ Implementation der Eulerischen Phi Funktion mit steps, welche auch die Mengen anzeigt.
+        Nicht fuer grosse Zahlen nutzen!
+        Fuer grosse Zahlen und wenn nur das Resultat wichtig ist "euler_phi" nutzen!
     
     Args:
       n: Inteager Zahl
@@ -320,7 +363,7 @@ def crt(a: tuple, b: tuple, *args: tuple, steps=False) -> int:
 
     if steps:
         display(Math(f"x = \sum_{{i=1}}^{len(stepsstr)} r_i \cdot M_i \cdot y_i  = {' + '.join(stepsstr)} = {crt_sum} \equiv {res} \mod{m}"))
-
-    # resultatfromulierung 58(res) + k * 315(m)???
+        display(Math("All \ solutions"))
+        display(Math(f"{res} + k * {m}"))
     return res
 
