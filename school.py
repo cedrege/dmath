@@ -396,30 +396,36 @@ def small_fermat(a:int,b:int,x:int, steps=False):
     if check_prime(x):
         new_exp = b // (x-1)
         exp_rest = b % (x-1)
+        display(Math(f'{a}^{{{b}}}\ mod\ {x}'))
         if steps and exp_rest > 0:
-            print(f'({a}^{x-1})^{new_exp} * {a}^{exp_rest} mod {x}')
-            print(f'({a}^{x-1} mod {x})^{new_exp} * {a}^{exp_rest} mod {x}')
-            print('Kleiner Satz von Fermat => m^(p-1) mod p = 1 wenn p = prime')
-            print(f'1^{new_exp} * {a}^{exp_rest} mod {x}')
-            print(f'{a**exp_rest} mod {x}')
+            display(Math(f'(\f{a}^{{{x-1}}})^{{{new_exp}}}\ *\ {a}^{{{exp_rest}}} \ mod\ {x}'))
+            display(Math(f'(\f{a}^{{{x-1}}}\ mod\ {x})^{{{new_exp}}}\ *\ {a}^{{{exp_rest}}}\ mod\ {x}'))
+            display(Math('Kleiner\ Satz\ von\ Fermat\ =>\ m^{(p-1)}\ mod\ p\ =\ 1\ ||\ wenn\ p\ =\ prime'))
+            display(Math(f'1^{{{new_exp}}}\ mod\ {x}'))
+            display(Math(f'{a**exp_rest}\ mod\ {x}'))
         if steps and exp_rest == 0:
-            print(f'({a}^{x-1})^{new_exp} mod {x}')
-            print(f'({a}^{x-1} mod {x})^{new_exp} mod {x}')
-            print('Kleiner Satz von Fermat => m^(p-1) mod p = 1 wenn p = prime')
-            print(f'1^{new_exp} mod {x}')
-            print(f'{a**exp_rest} mod {x}')
-        print(f'{a**exp_rest%x}')
+            display(Math(f'(\f{a}^{{{x-1}}})^{{{new_exp}}}\ mod\ {x}'))
+            display(Math(f'(\f{a}^{{{x-1}}}\ mod\ {x})^{{{new_exp}}}\ mod\ {x}'))
+            display(Math('Kleiner\ Satz\ von\ Fermat\ =>\ m^{(p-1)}\ mod\ p\ =\ 1\ ||\ wenn\ p\ =\ prime'))
+            display(Math(f'1^{{{new_exp}}}\ mod\ {x}'))
+            display(Math(f'{a**exp_rest}\ mod\ {x}'))
+        if a**exp_rest > x:
+            display(Math(f'{a**exp_rest%x}\ mod\ {x}'))
+        else:
+            display(Math(f'{a**exp_rest%x}\ mod\ {x}'))
+        
     else:
         print('Kleiner Fermat funktioniert nur wenn mod einer Primzahl')
 
 def euler_prime(x:int,y=0,x2=1,y2=1):
     """x2 und y2 sind für exponenten"""
-    print('formel für ungefähre Bestimmung: x/ln(x) - y/ln(y)')
+    display(Math('Formel\ für\ ungefähre\ Bestimmung:\ \dfrac{x}{ln(x)}\ -\ \dfrac{y}{ln(y)}'))
     try:
         if y !=0:
-            print(x**x2/(x2*np.log(x)) - y**y2/(y2*np.log(y)))
+            result = x**x2/(x2*np.log(x)) - y**y2/(y2*np.log(y))
+            display(Math(f"{result}"))
         else:
-            print(x/np.log(x))
+            display(Math(f"{{{x/np.log(x)}}}"))
     except TypeError:
         print('use addition inputs for exponents; x2 = exponent of x and y2 = exponent of y')
         
