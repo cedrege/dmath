@@ -214,11 +214,15 @@ def euclid_ggt_extended(a: int, b: int, steps = False) -> int:
     Returns:
       Inverses Element am Index 0 des Tupels
     """
-    # TODO: check and fix this
-    # Kann dann jenachdem auch gleich noch im CRT eingebaut werden. aber muss zuerst sauber laufen
-    raise Exception("Do stimmt no was nonig... choennets uskommentiere und teschde, eventuell spinnts nur bi mir... :)")
-    d1, _, _ = euclid_ggt_extended_print(a, b, steps)
-    return d1
+    d, s, t = euclid_ggt_extended_print(a, b, steps)
+    s_1 = s
+    t_1 = t
+    if s < 0: s_1 = s + b
+    if t < 0: t_1 = t + a
+    print()
+    display(Math(f"{a}^{{-1}}\mod {b} = {s_1}"))
+    display(Math(f"{b}^{{-1}}\mod {a} = {t_1}"))
+    return (s, t)
 
 def euler_phi(n: int, steps=False, primfac_steps=False) -> int:
     """ Implementation der Eulerischen Phi Funktion mit steps. Zeigt nur die Anzahl der Elemente.
