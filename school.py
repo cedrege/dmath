@@ -223,7 +223,7 @@ def euclid_ggt_extended(a: int, b: int, steps = False) -> int:
         print()
         display(Math(f"{a}^{{-1}}\mod {b} = {s_1}"))
         display(Math(f"{b}^{{-1}}\mod {a} = {t_1}"))
-    return (s, t)
+    return (s_1, t_1)
 
 def euler_phi(n: int, steps=False, primfac_steps=False) -> int:
     """ Implementation der Eulerischen Phi Funktion mit steps. Zeigt nur die Anzahl der Elemente.
@@ -277,7 +277,7 @@ def euler_phi_set(n: int, steps=False, primfac_steps=False) -> int:
       primfac_steps: Wenn True, zeigt zusaetzlich Schritte fuer Primfaktorzerlegung an
 
     Returns:
-      Anzahl Element der Eulerischen Phi Funktion fuer n
+      Die Zahlenmenge der Eulerischen Phi Funktion
     """
     prime_factors = prime_facs(n, primfac_steps)
 
@@ -295,7 +295,31 @@ def euler_phi_set(n: int, steps=False, primfac_steps=False) -> int:
     if steps:
         display(Math(f"\mathbb{{Z}}_{{{str(n)}}}^* = \{{{ ', '.join(str(x) for x in difference_all_tmp) } \}} \Rightarrow \lvert \mathbb{{Z}}_{{{str(n)}}}^* \\rvert = \Phi({str(n)}) = {str(len(difference_all_tmp))} "))
 
-    return len(difference_all_tmp)
+    return set(difference_all_tmp)
+
+def calc_inv_based_on_euler_phi_set(n: int, steps=False, euclid_ext_steps=False) -> int:
+    """ Berechnet alle invertiebaren Elemente im subset 0 - n der euler_phi Methode.
+        Elemente die nicht ausgegeben werden sind nicht invertierbar.
+
+    Args:
+      n: Bereich der Euler Phi Funktion
+      steps: Wenn True, zeigt Schritte auf
+      euclid_ext_steps: Zeigt zudem die Berechnung des erweiterten Euklids an
+
+    Returns:
+      Liste mit Tupels, index = 0 Position im Bereich, index 1 = invertiertes Element davon.
+    """
+    eu_phi_set = euler_phi_set(n, steps)
+
+    subset = []
+    for i in eu_phi_set:
+        subset.append((i, euclid_ggt_extended(i, n, euclid_ext_steps)[0]))
+
+    if steps:
+        for j in subset:
+            display(Math(f"{j[0]}^{{-1}}={j[1]}"))
+
+    return subset
 
 def crt(a: tuple, b: tuple, *args: tuple, steps=False) -> int:
     """ Implementation der Chinesischen Restwerts mit steps. Diese Funktion löst ein
