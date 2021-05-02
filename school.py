@@ -219,9 +219,10 @@ def euclid_ggt_extended(a: int, b: int, steps = False) -> int:
     t_1 = t
     if s < 0: s_1 = s + b
     if t < 0: t_1 = t + a
-    print()
-    display(Math(f"{a}^{{-1}}\mod {b} = {s_1}"))
-    display(Math(f"{b}^{{-1}}\mod {a} = {t_1}"))
+    if steps:
+        print()
+        display(Math(f"{a}^{{-1}}\mod {b} = {s_1}"))
+        display(Math(f"{b}^{{-1}}\mod {a} = {t_1}"))
     return (s, t)
 
 def euler_phi(n: int, steps=False, primfac_steps=False) -> int:
