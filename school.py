@@ -39,17 +39,19 @@ def fac(n: int) -> int:
     return n * fac(n-1) if n > 1 else 1
 
 def binomial_coefficient(n: int, k: int) -> float:
-    """TODO:
+    """ Berechnet den Binomialkoeffizienten zweier Zahlen.
+        Die Paremeter wurden so implementiert, dass man n tief k lesen wuerde.
+        Somit ergibt sich die Aussage: Man kann k verschiedene Objekte von der Menge n auswaehlen kann.
 
     Args:
-      n: 
-      k: 
+      n: Anzahl Moeglichkeiten
+      k: Anzahl Erfolge
 
     Raises:
-      ValueError: When divisor is zero
+      ValueError: Wenn dividend null ist
 
     Returns:
-      The binomial coefficient of the provided parameters
+      Binomialkoeffizient, berechnet aus den angegeben Parametern
     """
     dividend = 1
     divisor = 1
@@ -64,30 +66,31 @@ def binomial_coefficient(n: int, k: int) -> float:
     return dividend / divisor
 
 def binomial_distribution(n: int, k: int, p: int) -> float:
-    """Calculates the binomial distribution for the given paramters
+    """ Berechnet die Binomialverteilung anhand der angegeben Werte.
 
     Args: 
-      n: number of trials
-      k: number of times for a specific outcome within n trials
-      p: probability of failure on a single trial
+      n: Anzahl Moeglichkeiten
+      k: Anzahl Erfolge
+      p: Wahrscheinlichkeit auf Erfolg bei einem Versuch
 
     Returns:
-      The binomial distribution for the given paramters
+      Binomialverteilung, berechnet aus den angegeben Parametern
     """
     return binomial_coefficient(n, k) * p**k * (1-p)**(n-k)
 
 def cumsum_binomial_distribution(n: int, p: int, sum_range: tuple) -> float:
-    """Calculates the cumulative sum of the binomial distribution between a given range
+    """ Berechnet die Binomialverteilung anhand der angegeben Werte.
+        Die Wahrscheinlichkeiten werden in einem bestimmten Bereich gerechnet und zusammensummiert.
 
     Args:
-      n: number of trials
-      p: probability of failure on a single trial
-      sum_range: chance accumulated between the given range.
-                 The +1 for the upper bound of the range function will be automatically added.
-                 So, do not add it yourselves!
+      n: Anzahl Moeglichkeiten
+      p: Wahrscheinlichkeit auf Erfolg bei einem Versuch
+      sum_range: Bereich, indem die Wahrscheinlichkeiten zusammengerechnet werden.
+                 Es wird automatisch +1 fuer die obere Grenze hinzugefuegt.
+                 Manuelles hinzufügen wird in einem falschen Resultat resultieren.
 
     Returns:
-      The cumulative sum of the binomial distribution between a given range
+      Summierte Resultate der Binomialverteilung in einem bestimmten Bereich
     """
     sum = 0
     for i in range(sum_range[0], sum_range[1] + 1):
@@ -95,28 +98,29 @@ def cumsum_binomial_distribution(n: int, p: int, sum_range: tuple) -> float:
     return sum
 
 def poisson_distribution(my: int, k: int) -> float:
-    """ Calculates the poisson distribution for a given my and k
+    """ Berechnet die Poisson Verteilung fuer my und k
     
     Args:
-      my: n * p
-      k: number of times for a specific outcome within n trials
+      my: Anzahl Moeglichkeiten mal potenzielle Chance (n * p)
+      k: Anzahl Erfolge
 
     Returns:
-      The poisson distribution for the given paramters
+      Resultat der Poisson Verteilung fuer die angegeben Parameter
     """
     return my**k/fac(k) * e**(-my)
 
-def cumsum_poisson_distribution(my: int,sum_range: tuple) -> float:
-    """ Calculates the cumulative sum of the poisson distribution for a given my
+def cumsum_poisson_distribution(my: int, sum_range: tuple) -> float:
+    """ Berechnet die Poisson Verteilung fuer my und k.
+        Die Wahrscheinlichkeiten werden in einem bestimmten Bereich gerechnet und zusammensummiert.
     
     Args:
-      my: n * p
-      sum_range: chance accumulated between the given range.
-                 The +1 for the upper bound of the range function will be automatically added.
-                 So, do not add it yourselves!
+      my: Anzahl Moeglichkeiten mal potenzielle Chance (n * p)
+      sum_range: Bereich, indem die Wahrscheinlichkeiten zusammengerechnet werden.
+                 Es wird automatisch +1 fuer die obere Grenze hinzugefuegt.
+                 Manuelles hinzufügen wird in einem falschen Resultat resultieren.
 
     Returns:
-      The poisson distribution for the given paramters
+      Summierte Resultate der Poisson Verteilung ueber den angegeben Bereich
     """
     sum = 0
     for i in range(sum_range[0], sum_range[1] + 1):
@@ -204,7 +208,8 @@ def euclid_ggt_extended_print(a: int, b: int, steps = False):
     return g 
 
 def euclid_ggt_extended(a: int, b: int, steps = False) -> int:
-    """ Berechnet die inversen Elemente zweier Inteager Zahlen
+    """ Berechnet die inversen Elemente zweier Inteager Zahlen.
+        Die Zahlen müssen Teilerfremd sein.
     
     Args:
       a: Erste Inteager Zahl
@@ -214,6 +219,9 @@ def euclid_ggt_extended(a: int, b: int, steps = False) -> int:
     Returns:
       Inverses Element am Index 0 des Tupels
     """
+    if euclid_ggt(a, b) != 1:
+        raise ValueError("Extended euclid requires two numbers which are coprime!")
+
     d, s, t = euclid_ggt_extended_print(a, b, steps)
     s_1 = s
     t_1 = t
