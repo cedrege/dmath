@@ -188,6 +188,8 @@ def small_fermat(a:int,b:int,x:int, steps=False):
         
     else:
         print('Kleiner Fermat funktioniert nur wenn mod einer Primzahl')
+        display(Math(f'{a}^{{{b}}}\ mod\ {x}'))
+        display(Math(f'{a**b%x}\ mod\ {x}'))
 
 def euler_prime(x:int,y=0):
     """x2 und y2 sind für exponenten"""
