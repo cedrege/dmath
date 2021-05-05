@@ -192,7 +192,6 @@ def small_fermat(a:int,b:int,x:int, steps=False):
         display(Math(f'{a**b%x}\ mod\ {x}'))
 
 def euler_prime(x:int,y=0):
-    """x2 und y2 sind für exponenten"""
     display(Math('Formel\ für\ ungefähre\ Bestimmung:\ \\frac{x}{ln(x)}\ -\ \\frac{y}{ln(y)}'))
     if y !=0:
         result = x/(log(x)) - y/(log(y))
@@ -204,3 +203,49 @@ def euler_prime(x:int,y=0):
             display(Math(str(result)))
     else:
         display(Math(f"{{{x/log(x)}}}"))
+
+def bayes(fpr, fnr, verb): #oder 1-spezifität, 1-sensitivität, verb
+    sensitivity = 1-fnr
+    spezifitaet = 1-fpr
+
+    bayes_pos = sensitivity * verb / (sensitivity * verb + fpr * (1-verb))
+    bayes_neg = spezifitaet * (1-verb) / (spezifitaet * (1-verb) + fnr * verb)
+    abs_pos = verb * sensitivity + (1-verb) * fpr
+    abs_neg = verb * fnr + (1-verb) * spezifitaet
+    print("chance nach pos. test wenn wirklich pos:", bayes_pos)
+    print("chance nach neg. test wenn wirklich neg.:", bayes_neg)
+    print("chance nach pos. test wenn NICHT pos:", 1-bayes_pos)
+    print("chance nach neg. test wenn NICHT neg.:", 1-bayes_neg)
+    print("abs. wahrscheinlichkeit für pos. Ereignis:", abs_pos)
+    print("abs. wahrscheinlichkeit für neg. Ereignis:", abs_neg)
+
+def sma(n, p, m, steps=False):
+    binary = bin(p)
+    binary = binary[2:]
+    binary_short = str(binary[1:])
+    todo = []
+    new = n
+    count = 1
+    a = ""
+    for i in binary_short:
+        if i == "1":
+            todo.append("QM")
+        if i == "0":
+            todo.append("Q")
+    for i in binary:
+        if i == "1":
+            a += f"2^{(len(binary)-count)}+"
+        count += 1
+    for i in todo:
+        if i == "QM":
+            new = (new**2)*n
+        if i == "Q":
+            new = new**2
+    if steps:
+        display(Math(f'{n}^{{{p}}}\ mod\ {m}'))
+        display(Math(f'{p}\ =\ {binary}\ in\ binary'))
+        display(Math(f'nun\ gilt\ für\ jedes\ 1\ QM\ und\ 0\ Q\ und\ das\ erste\ 1\ wird\ ignoriert\ =>\ {binary[1:]}\ wird\ zu\ {todo}'))
+        display(Math(f'Q\ =\ hoch\ 2\ ;\ M\ =\ multiplizieren\ mit\ {n}'))
+        display(Math(f'{n}^{{{a[:-1]}}}\ mod\ {m}'))
+        display(Math(f'{new%m}\ mod\ {m}'))
+    return new%m
