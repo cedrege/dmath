@@ -141,6 +141,7 @@ def ewfin(n: int, p: float):
 
 
 def check_prime(x):
+    """Takes in a number and Returns True if it's a Prime number, otherwise returns False"""
     # Python program to check if
     # given number is prime or not
 
@@ -164,7 +165,18 @@ def check_prime(x):
         return False
 
 def small_fermat(a:int,b:int,x:int, steps=False):
-    """a = number b = exponent x = mod(x)"""
+    """implementierung für step by step Anleitung des kleinen Fermats
+    
+    Args:
+      a: Basis
+      b: Exponent
+      x: zu welchem modulo
+      steps: Wenn True, zeigt Schritte auf
+      
+    Returns:
+      a^b mod x
+      
+    """
     if check_prime(x):
         new_exp = b // (x-1)
         exp_rest = b % (x-1)
@@ -192,6 +204,15 @@ def small_fermat(a:int,b:int,x:int, steps=False):
         display(Math(f'{a**b%x}\ mod\ {x}'))
 
 def euler_prime(x:int,y=0):
+    """Berechnung, wieviele Primzahlen in einem Bereich anzutreffen sind
+    
+    Args:
+      x: Ende des Intervalls
+      y: Anfang des intervalls, von 0 her falls nicht angegeben
+    Returns:
+      erwartete Primzahlen in bereich zwischen x und y
+      
+    """
     display(Math('Formel\ für\ ungefähre\ Bestimmung:\ \\frac{x}{ln(x)}\ -\ \\frac{y}{ln(y)}'))
     if y !=0:
         result = x/(log(x)) - y/(log(y))
@@ -205,6 +226,15 @@ def euler_prime(x:int,y=0):
         display(Math(f"{{{x/log(x)}}}"))
 
 def bayes(fpr, fnr, verb): #oder 1-spezifität, 1-sensitivität, verb
+    """Implementierung von Bayes rule
+    
+    Args:
+      fpr: False positive rate
+      fnr: False negative rate
+      verb: Verbreitung
+      
+    Returns:
+      alle möglichen chancen nach erfolgtem Test"""
     sensitivity = 1-fnr
     spezifitaet = 1-fpr
 
@@ -220,6 +250,15 @@ def bayes(fpr, fnr, verb): #oder 1-spezifität, 1-sensitivität, verb
     print("abs. wahrscheinlichkeit für neg. Ereignis:", abs_neg)
 
 def sma(n, p, m, steps=False):
+    """Implementierung von Square and Multiply
+    
+    Args:
+      n: Basis
+      p: potenz bzw exponent
+      m: modulo
+      steps: wenn True zeigt es Schritte an
+    Returns:
+      n^p%m"""
     binary = bin(p)
     binary = binary[2:]
     binary_short = str(binary[1:])
@@ -227,6 +266,7 @@ def sma(n, p, m, steps=False):
     new = n
     count = 1
     a = ""
+    b = f"{n}"
     for i in binary_short:
         if i == "1":
             todo.append("QM")
@@ -239,13 +279,16 @@ def sma(n, p, m, steps=False):
     for i in todo:
         if i == "QM":
             new = (new**2)*n
+            b += f"\ Q\& M\ mod\ {m}\ => {new%m}\ "
         if i == "Q":
             new = new**2
+            b += f"\ Q\ mod\ {m}\ => {new%m}\ "
     if steps:
         display(Math(f'{n}^{{{p}}}\ mod\ {m}'))
         display(Math(f'{p}\ =\ {binary}\ in\ binary'))
         display(Math(f'nun\ gilt\ für\ jedes\ 1\ QM\ und\ 0\ Q\ und\ das\ erste\ 1\ wird\ ignoriert\ =>\ {binary[1:]}\ wird\ zu\ {todo}'))
         display(Math(f'Q\ =\ hoch\ 2\ ;\ M\ =\ multiplizieren\ mit\ {n}'))
         display(Math(f'{n}^{{{a[:-1]}}}\ mod\ {m}'))
+        display(Math(f'{b}'))
         display(Math(f'{new%m}\ mod\ {m}'))
     return new%m
