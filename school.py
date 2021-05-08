@@ -328,6 +328,30 @@ def calc_inv_based_on_euler_phi_set(n: int, steps=False, euclid_ext_steps=False)
 
     return subset
 
+def euler_qr_nr_criterion(p: int, a: int, steps=False) -> bool:
+    """ Implementierung des Euler Kriteriums bezüglich Quadratischem Restwert und Quadratischem nicht Restwert
+
+        Wikipedia Link: https://en.wikipedia.org/wiki/Euler%27s_criterion
+    
+    Args:
+      p: Primzahl
+      a: Teilerfremde Zahl zum Parameter "p"
+      steps: Wenn True, zeigt Schritte auf
+      
+    Returns:
+      True, wenn a einen Quadratischen Rest mod p aufweist - sonst False
+    """
+    if euclid_ggt(p, a) != 1:
+        raise ValueError("a must be coprime to p")
+
+    res = a**((p-1) // 2) % p
+
+    if steps:
+        display(Math(f"a^{{\\frac{{p-1}}{{2}}}} = {a}^{{\\frac{{{p}-1}}{{2}}}} = {a}^{{{(p-1) // 2}}}"))
+        display(Math(f"{a}^{{\\frac{{{p}-1}}{{2}}}} \equiv {res if res == 1 else res - p} \mod {p}"))
+
+    return True if res == 1 else False
+
 def crt(a: tuple, b: tuple, *args: tuple, steps=False) -> int:
     """ Implementation der Chinesischen Restwerts mit steps. Diese Funktion löst ein
         x für 2 oder mehrere Modulo Operationen auf.
