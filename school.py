@@ -522,7 +522,7 @@ def sma(n, p, m, steps=False):
       m: modulo
       steps: wenn True zeigt es Schritte an
     Returns:
-      n^p%m"""
+      n^p % m"""
     binary = bin(p)
     binary = binary[2:]
     binary_short = str(binary[1:])
@@ -555,4 +555,93 @@ def sma(n, p, m, steps=False):
         display(Math(f'{n}^{{{a[:-1]}}}\ mod\ {m}'))
         display(Math(f'{b}'))
         display(Math(f'{new%m}\ mod\ {m}'))
-    return new%m
+    return new % m
+
+def disk_exp_func(a, b, m, log=False, steps=False):
+    """Implementierung von der diskreten exponential Funktion
+    
+    Args(wenn log = False):
+      Gleichung dieser Art von links nach rechts: 7 = 3^k mod 17
+      a: linke Seite
+      b: rechte seite
+      m: modulo
+      steps: wenn True zeigt es Schritte an
+
+    Args(wenn log = True):
+      Gleichung dieser Art von links nach rechts: k = log3(7) mod 17
+      a: Basis des logs
+      b: Argument im Log
+      m: modulo
+      steps: wenn True zeigt es Schritte an
+    Returns:
+      gibt k zurück für:
+      Lösung für Gleichung k = loga(b) mod m 
+      oder
+      Lösung für Gleichung a = b^k mod m"""
+    if log:
+        print(f'"k = log{a}({b}) mod {m}" wird umgeformt in "{b} = {a}^k mod {m}')
+        print()
+        c=b
+        b=a
+        a=c
+        
+    tl = [[],[]]
+    count=0
+    for i in range(1, m+1):
+        count += 1
+        tl[0].append(i)
+        tl[1].append((b**i)%m)
+        if b**i%m == a:
+            break
+    if steps:
+        print(f"Frage ist: wann ist {a} = {b}^k mod 17")
+        print(DataFrame((tl), index=["k",f"{b}^k mod {m}"], columns=[str(" ") for x in range(count)]))
+        print()
+        if count == m:
+            print("Antwort: es gibt keine Lösung")
+        else:
+            print(f"Antwort: {a} = {b}^{count} mod {m}")
+            print(f"oder kurz: k = {count}")
+    return count
+
+def qr_and_nr(n, eulersteps=False, steps=False):
+    """Implementierung von quadratischem Rest und Nicht-rest
+    
+    Args:
+      n: die Modulo Zahl für welche alles berechnet wird
+      eulersteps: zeigt die schritte für die euler_phi_set an
+      steps: wenn True zeigt es Schritte an
+    Returns:
+      quadratischer Rest und quadratischer nicht-rest"""
+    numbers = euler_phi_set(n, steps=eulersteps)
+    tl = [[],[]]
+    for i in numbers:
+        tl[0].append(i)
+        tl[1].append((i**2) % n)
+    if steps:
+        print(DataFrame((tl), index=["x",f"x^2 mod {n}"], columns=[str(" ") for x in range(len(numbers))]))
+
+    tl2 = [[],[]]
+    qr = []
+    nr = []
+    for i in numbers:
+        if i in tl[1]:
+            a = i
+            indices = [i for i, x in enumerate(tl[1]) if x == a]
+            indices_new = []
+            for j in indices:
+                indices_new.append(tl[0][j]) 
+            tl2[0].append(i)
+            tl2[1].append(indices_new)
+            qr.append(i)
+        else:
+            tl2[0].append(i)
+            tl2[1].append("-")
+            nr.append(i)
+    if steps:
+        print(DataFrame((tl2), index=["a",f"sqrt(a) mod {n}"], columns=[str(" ") for x in range(len(numbers))]))
+        print()
+        print("quad rest:", qr)
+        print("quad nichtrest:", nr)
+
+    return qr, nr
