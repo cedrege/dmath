@@ -577,7 +577,9 @@ def disk_exp_func(a, b, m, log=False, steps=False):
       gibt k zurück für:
       Lösung für Gleichung k = loga(b) mod m 
       oder
-      Lösung für Gleichung a = b^k mod m"""
+      Lösung für Gleichung a = b^k mod m
+      
+      wenn keine Lösung existiert, wird None zurückgegeben"""
     if log:
         display(Math(f'"k\ =\ log_{{{a}}}({b})\ mod\ {m}"\ wird\ umgeformt\ in\ "{b}\ =\ {a}^k\ mod\ {m}"'))
         print()
@@ -600,7 +602,10 @@ def disk_exp_func(a, b, m, log=False, steps=False):
         else:
             display(Math(f"Antwort:\ {a}\ =\ {b}^{count}\ mod\ {m}"))
             display(Math(f"oder\ kurz:\ k\ =\ {count}"))
-    return count
+    if count == m:
+        return None
+    else:
+        return count
 
 def qr_and_nr(n, eulersteps=False, steps=False):
     """Implementierung von quadratischem Rest und Nicht-rest
