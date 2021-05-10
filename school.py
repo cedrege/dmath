@@ -644,7 +644,7 @@ def qr_and_nr(n, eulersteps=False, steps=False):
     if steps:
         print(DataFrame((tl2), index=["a",f"sqrt(a) mod {n}"], columns=[str(" ") for x in range(len(numbers))]))
         print()
-        display(Math(f"quadratische\ rest: \{{{str(qr)[1:-1]} \}}"))
+        display(Math(f"quadratische\ rest\ QR\ = \{{{str(qr)[1:-1]} \}}"))
         display(Math(f"quadratische\ nichtrest\ NR = \{{{str(nr)[1:-1]} \}}"))
 
     return qr, nr
