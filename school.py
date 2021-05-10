@@ -579,11 +579,9 @@ def disk_exp_func(a, b, m, log=False, steps=False):
       oder
       Lösung für Gleichung a = b^k mod m"""
     if log:
-        print(f'"k = log{a}({b}) mod {m}" wird umgeformt in "{b} = {a}^k mod {m}')
+        display(Math(f'"k\ =\ log_{{{a}}}({b})\ mod\ {m}"\ wird\ umgeformt\ in\ "{b}\ =\ {a}^k\ mod\ {m}"'))
         print()
-        c=b
-        b=a
-        a=c
+        a, b = b, a
         
     tl = [[],[]]
     count=0
@@ -594,14 +592,14 @@ def disk_exp_func(a, b, m, log=False, steps=False):
         if b**i%m == a:
             break
     if steps:
-        print(f"Frage ist: wann ist {a} = {b}^k mod 17")
+        display(Math(f"Frage\ ist:\ wann\ ist\ {a}\ =\ {b}^k\ mod\ 17"))
         print(DataFrame((tl), index=["k",f"{b}^k mod {m}"], columns=[str(" ") for x in range(count)]))
         print()
         if count == m:
-            print("Antwort: es gibt keine Lösung")
+            display(Math("Antwort:\ es\ gibt\ keine\ Lösung"))
         else:
-            print(f"Antwort: {a} = {b}^{count} mod {m}")
-            print(f"oder kurz: k = {count}")
+            display(Math(f"Antwort:\ {a}\ =\ {b}^{count}\ mod\ {m}"))
+            display(Math(f"oder\ kurz:\ k\ =\ {count}"))
     return count
 
 def qr_and_nr(n, eulersteps=False, steps=False):
@@ -613,7 +611,7 @@ def qr_and_nr(n, eulersteps=False, steps=False):
       steps: wenn True zeigt es Schritte an
     Returns:
       quadratischer Rest und quadratischer nicht-rest"""
-    numbers = euler_phi_set(n, steps=eulersteps)
+    numbers = sorted(euler_phi_set(n, steps=eulersteps))
     tl = [[],[]]
     for i in numbers:
         tl[0].append(i)
@@ -641,7 +639,7 @@ def qr_and_nr(n, eulersteps=False, steps=False):
     if steps:
         print(DataFrame((tl2), index=["a",f"sqrt(a) mod {n}"], columns=[str(" ") for x in range(len(numbers))]))
         print()
-        print("quad rest:", qr)
-        print("quad nichtrest:", nr)
+        display(Math(f"quadratische\ rest: \{{{str(qr)[1:-1]} \}}"))
+        display(Math(f"quadratische\ nichtrest\ NR = \{{{str(nr)[1:-1]} \}}"))
 
     return qr, nr
