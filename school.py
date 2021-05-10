@@ -546,7 +546,7 @@ def sma(n, p, m, steps=False):
       m: modulo
       steps: wenn True zeigt es Schritte an
     Returns:
-      n^p%m"""
+      n^p % m"""
     binary = bin(p)
     binary = binary[2:]
     binary_short = str(binary[1:])
@@ -579,4 +579,55 @@ def sma(n, p, m, steps=False):
         display(Math(f'{n}^{{{a[:-1]}}}\ mod\ {m}'))
         display(Math(f'{b}'))
         display(Math(f'{new%m}\ mod\ {m}'))
-    return new%m
+    return new % m
+
+def disk_exp_func(a, b, m, log=False, steps=False):
+    """Implementierung von der diskreten exponential Funktion
+    
+    Args(wenn log = False):
+      Gleichung dieser Art von links nach rechts: 7 = 3^k mod 17
+      a: linke Seite
+      b: rechte seite
+      m: modulo
+      steps: wenn True zeigt es Schritte an
+
+    Args(wenn log = True):
+      Gleichung dieser Art von links nach rechts: k = log3(7) mod 17
+      a: Basis des logs
+      b: Argument im Log
+      m: modulo
+      steps: wenn True zeigt es Schritte an
+    Returns:
+      gibt k zurück für:
+      Lösung für Gleichung k = loga(b) mod m 
+      oder
+      Lösung für Gleichung a = b^k mod m
+      
+      wenn keine Lösung existiert, wird None zurückgegeben"""
+    if log:
+        display(Math(f'"k\ =\ log_{{{a}}}({b})\ mod\ {m}"\ wird\ umgeformt\ in\ "{b}\ =\ {a}^k\ mod\ {m}"'))
+        print()
+        a, b = b, a
+        
+    tl = [[],[]]
+    count=0
+    for i in range(1, m+1):
+        count += 1
+        tl[0].append(i)
+        tl[1].append((b**i)%m)
+        if b**i%m == a:
+            break
+    if steps:
+        display(Math(f"Frage\ ist:\ wann\ ist\ {a}\ =\ {b}^k\ mod\ 17"))
+        print(DataFrame((tl), index=["k",f"{b}^k mod {m}"], columns=[str(" ") for x in range(count)]))
+        print()
+        if count == m:
+            display(Math("Antwort:\ es\ gibt\ keine\ Lösung"))
+        else:
+            display(Math(f"Antwort:\ {a}\ =\ {b}^{count}\ mod\ {m}"))
+            display(Math(f"oder\ kurz:\ k\ =\ {count}"))
+    if count == m:
+        return None
+    else:
+        return count
+
