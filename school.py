@@ -33,9 +33,40 @@ from numpy import cumsum, e
 from IPython.display import display, Math
 from functools import reduce
 from math import log
+from typing import get_type_hints
+
+
+def strict_types(function):
+    def type_checker(*args, **kwargs):
+
+        # Get dict of (arg. name, expected arg. type)
+        # get_type_hints is often the same as "function.__annotations__" (see: docs.python.org/3/library/typing.html)
+        hints = get_type_hints(function)
+
+        # Get dict of (arg. name, given arg.)
+        all_args = kwargs.copy()
+        all_args.update(dict(zip(function.__code__.co_varnames, args)))
+
+        # Check if given arg. type is the same as expected arg. type
+        for argument, argument_type in ((i, type(j)) for i, j in all_args.items()):
+            if argument in hints:
+                if not issubclass(argument_type, hints[argument]):
+                    raise TypeError('Type of {} is {} and not {}'.format(argument, argument_type, hints[argument]))
+
+        result = function(*args, **kwargs)
+
+        if 'return' in hints:
+            if type(result) != hints['return']:
+                raise TypeError('Type of result is {} and not {}'.format(type(result), hints['return']))
+
+        return result
+
+    return type_checker
+
 
 def fac(n: int) -> int:
     return n * fac(n-1) if n > 1 else 1
+
 
 def binomial_coefficient(n: int, k: int) -> float:
     """ Berechnet den Binomialkoeffizienten zweier Zahlen.
@@ -64,6 +95,7 @@ def binomial_coefficient(n: int, k: int) -> float:
 
     return dividend / divisor
 
+
 def binomial_distribution(n: int, k: int, p: int) -> float:
     """ Berechnet die Binomialverteilung anhand der angegeben Werte.
 
@@ -76,6 +108,7 @@ def binomial_distribution(n: int, k: int, p: int) -> float:
       Binomialverteilung, berechnet aus den angegeben Parametern
     """
     return binomial_coefficient(n, k) * p**k * (1-p)**(n-k)
+
 
 def cumsum_binomial_distribution(n: int, p: int, sum_range: tuple) -> float:
     """ Berechnet die Binomialverteilung anhand der angegeben Werte.
@@ -96,6 +129,7 @@ def cumsum_binomial_distribution(n: int, p: int, sum_range: tuple) -> float:
         sum += binomial_distribution(n, i, p)
     return sum
 
+
 def poisson_distribution(my: int, k: int) -> float:
     """ Berechnet die Poisson Verteilung fuer my und k
     
@@ -107,6 +141,7 @@ def poisson_distribution(my: int, k: int) -> float:
       Resultat der Poisson Verteilung fuer die angegeben Parameter
     """
     return my**k/fac(k) * e**(-my)
+
 
 def cumsum_poisson_distribution(my: int, sum_range: tuple) -> float:
     """ Berechnet die Poisson Verteilung fuer my und k.
@@ -126,6 +161,7 @@ def cumsum_poisson_distribution(my: int, sum_range: tuple) -> float:
         sum += poisson_distribution(my, i)
     return sum
 
+
 def ewfin(n: int, p: float):
     complement = 1 - p
     arr = [p]
@@ -143,6 +179,7 @@ def ewfin(n: int, p: float):
     tl = [[str(x) for x in range(n+1)], arr2, cumsum(arr2)]
     print(DataFrame(tl, index=["Xi", "P(x = Xi)", "sum(P(x))"], columns=[str(" ") for x in range(n+1)]))
     print(f"\nErwartungswert: {sum(arr2)}")
+
 
 def prime_facs(n: int, steps=False) -> list:
     """ Berechnet die Primfaktorzerlegung und zeigt die Schritte auf
@@ -166,6 +203,7 @@ def prime_facs(n: int, steps=False) -> list:
         i+=1  
     return list_of_factors
 
+
 def euclid_ggt_print(a, b, steps = False, calc = 1):
     """ Do not use this function! USE euclid_ggt instead.
     """
@@ -178,6 +216,7 @@ def euclid_ggt_print(a, b, steps = False, calc = 1):
         display(Math(f"{a} = {calc} \cdot {b} + {m}"))
     
     return euclid_ggt_print(b, m, steps, b // (m) if m > 0 else 1)
+
 
 def euclid_ggt(a: int, b: int, steps = False) -> int:
     """ Berechnet den groessten gemeinsamen Teiler zweier Inteager
@@ -206,6 +245,7 @@ def euclid_ggt_extended_print(a: int, b: int, steps = False):
 
     return g 
 
+
 def euclid_ggt_extended(a: int, b: int, steps = False) -> int:
     """ Berechnet die inversen Elemente zweier Inteager Zahlen.
         Die Zahlen müssen Teilerfremd sein.
@@ -231,6 +271,7 @@ def euclid_ggt_extended(a: int, b: int, steps = False) -> int:
         display(Math(f"{a}^{{-1}}\mod {b} = {s_1}"))
         display(Math(f"{b}^{{-1}}\mod {a} = {t_1}"))
     return (s_1, t_1)
+
 
 def euler_phi(n: int, steps=False, primfac_steps=False) -> int:
     """ Implementation der Eulerischen Phi Funktion mit steps. Zeigt nur die Anzahl der Elemente.
@@ -273,6 +314,7 @@ def euler_phi(n: int, steps=False, primfac_steps=False) -> int:
 
     return base_value
 
+
 def euler_phi_set(n: int, steps=False, primfac_steps=False) -> int:
     """ Implementation der Eulerischen Phi Funktion mit steps, welche auch die Mengen anzeigt.
         Nicht fuer grosse Zahlen nutzen!
@@ -304,6 +346,7 @@ def euler_phi_set(n: int, steps=False, primfac_steps=False) -> int:
 
     return set(difference_all_tmp)
 
+
 def calc_inv_based_on_euler_phi_set(n: int, steps=False, euclid_ext_steps=False) -> int:
     """ Berechnet alle invertiebaren Elemente im subset 0 - n der euler_phi Methode.
         Elemente die nicht ausgegeben werden sind nicht invertierbar.
@@ -328,6 +371,7 @@ def calc_inv_based_on_euler_phi_set(n: int, steps=False, euclid_ext_steps=False)
 
     return subset
 
+
 def euler_qr_nr_criterion(p: int, a: int, steps=False) -> bool:
     """ Implementierung des Euler Kriteriums bezüglich Quadratischem Restwert und Quadratischem nicht Restwert
 
@@ -351,6 +395,7 @@ def euler_qr_nr_criterion(p: int, a: int, steps=False) -> bool:
         display(Math(f"{a}^{{\\frac{{{p}-1}}{{2}}}} \equiv {res if res == 1 else res - p} \mod {p}"))
 
     return True if res == 1 else False
+
 
 def crt(a: tuple, b: tuple, *args: tuple, steps=False) -> int:
     """ Implementation der Chinesischen Restwerts mit steps. Diese Funktion löst ein
@@ -452,7 +497,8 @@ def check_prime(x):
     else:
         return False
 
-def small_fermat(a:int,b:int,x:int, steps=False):
+
+def small_fermat(a: int,b: int,x: int, steps=False):
     """implementierung für step by step Anleitung des kleinen Fermats
     
     Args:
@@ -491,7 +537,8 @@ def small_fermat(a:int,b:int,x:int, steps=False):
         display(Math(f'{a}^{{{b}}}\ mod\ {x}'))
         display(Math(f'{a**b%x}\ mod\ {x}'))
 
-def euler_prime(x:int,y=0):
+
+def euler_prime(x: int, y=0):
     """Berechnung, wieviele Primzahlen in einem Bereich anzutreffen sind
     
     Args:
@@ -512,6 +559,7 @@ def euler_prime(x:int,y=0):
             display(Math(str(result)))
     else:
         display(Math(f"{{{x/log(x)}}}"))
+
 
 def bayes(fpr, fnr, verb): #oder 1-spezifität, 1-sensitivität, verb
     """Implementierung von Bayes rule
@@ -536,6 +584,7 @@ def bayes(fpr, fnr, verb): #oder 1-spezifität, 1-sensitivität, verb
     print("chance nach neg. test wenn NICHT neg.:", 1-bayes_neg)
     print("abs. wahrscheinlichkeit für pos. Ereignis:", abs_pos)
     print("abs. wahrscheinlichkeit für neg. Ereignis:", abs_neg)
+
 
 def sma(n, p, m, steps=False):
     """Implementierung von Square and Multiply
@@ -579,7 +628,281 @@ def sma(n, p, m, steps=False):
         display(Math(f'{n}^{{{a[:-1]}}}\ mod\ {m}'))
         display(Math(f'{b}'))
         display(Math(f'{new%m}\ mod\ {m}'))
+    return new%m
+
+
+@strict_types
+def check_primitive_element(p: int, s: int, steps=False) -> bool:
+    """ Diese Funktion ueberprueft ob der Integer s ein primitives Element
+        von der Primzahl p ist. Dies ist der Fall wenn s^i mod p (0 < i < p)
+        alle Elemente in Z_p erzeugt.
+
+    Args:
+        p: Primzahl
+        s: Integer von dem erwartet wird, ein primitives Element von p zu sein
+        steps: Flag, wenn True werden die Schritte in Latex ausgegeben
+
+    Raises:
+        ValueError: Wenn p keine Primzahl ist
+
+    Returns:
+        Boolean der True ist, falls s ein erzeugendes/primitives Element von p ist.
+    """
+
+    if not check_prime(p):
+        raise ValueError(f'{p} is not a prime number!')
+
+    Z = [i for i in range(1, p)]
+
+    if steps:
+        display(Math('\mathrm{Input:}'))
+        display(Math(f'p = {p}, s = {s}'))
+        display(Math(f'\mathbb{{Z}}_{{{p}}}^{{*}} = {Z}'))
+        print()
+        display(Math('\mathrm{Berechnung:}'))
+
+    sequence = [s]
+
+    for n in range(1, p):
+
+        if steps:
+            display(Math(f'{sequence[-1]} \cdot {s} \;\bmod\; {p} = {sequence[-1] * s % p}'))
+
+        sequence.append(sequence[-1] * s % p)
+
+    sequence = list((set(sorted(sequence))))
+
+    if sequence == Z:
+        return True
+    else:
+        return False
+
+
+@strict_types
+def get_primitive_elements(p: int) -> list:
+    """ Diese Funktion berechnet mithilfe der Funktion "check_primitive_element"
+        eine Liste der primitiven Elemente von "p".
+
+    Args:
+        p: Primzahl
+
+    Raises:
+        ValueError: Wenn p keine Primzahl ist
+
+    Returns:
+        Liste der primitiven Elemente. Leere Liste wenn keine primitiven Elemente
+        gefunden werden.
+    """
+
+    if not check_prime(p):
+        raise ValueError(f'{p} is not a prime number!')
+
+    out = []
+    for nr in range(2, p):
+        if check_primitive_element(p, nr):
+            out.append(nr)
+
+    return out
+
+
+@strict_types
+def diffie_hellman(p: int, s: int, a: int, b: int, steps=False) -> tuple:
+    """ Implementation der Diffie-Hellman Verschluesselung. Beteiligt sind die
+        zwei Parteien A und B, welche sich gegenseitig verschluesselte
+        Nachrichten zusenden wollen.
+
+    Args:
+      p: Primzahl, 1. Teil des Schluessels
+      s: Primitives Element von p, 2. Teil des Schluessels
+      a: Zufaellig ausgewaehlte Zahl von Partei A welche kleiner als p ist
+      b: Zufaellig ausgewaehlte Zahl von Partei B welche kleiner als p ist
+      steps: Flag, wenn True werden die Schritte in Latex ausgegeben
+
+    Raises:
+      ValueError: Wenn p keine Primzahl und/oder s kein primitives Element von p ist.
+
+    Returns:
+      Die Funktion liefert den Wert "alpha" von A, den Wert "beta" von B und den
+      gemeinsamen Schluessel, welcher jeweils von A mit beta und von B mit alpha errechnet wird.
+    """
+
+    # check if a and b are smaller than p
+    if not a < p or not b < p:
+        raise ValueError(f'a and b must be smaller than p! a={a}, b={b}, p={p}')
+
+    # check if p is a prime number
+    if not check_prime(p):
+        raise ValueError(f'{p} is not a prime number!')
+
+    # check if s is a element of Zp* (primitive element)
+    if not check_primitive_element(p, s):
+        raise ValueError(f'{s} is not a primitive element!')
+
+    alpha = (s ** a) % p
+    beta = (s ** b) % p
+    key_A = (beta ** a) % p
+    key_B = (alpha ** b) % p
+
+    if steps:
+        display(Math('\mathrm{Input:}'))
+        display(Math(f'p = {p}, s = {s}, a = {a}, b = {b}'))
+        print()
+        display(Math('\mathrm{Alpha:}'))
+        display(Math('\\alpha = s^{a} \;\bmod\; p'))
+        display(Math(f'{alpha} = {s}^{{{a}}} \;\bmod\; {p}'))
+        print()
+        display(Math('\mathrm{Beta:}'))
+        display(Math('\\beta = s^{b} \;\bmod\; p'))
+        display(Math(f'{beta} = {s}^{{{b}}} \;\bmod\; {p}'))
+        print()
+        display(Math('\mathrm{Key:}'))
+        display(Math('\mathcal{K} = \\alpha^{b} = \\beta^{a} = (s^{a})^{b}'))
+        display(Math(f'{key_A} = {alpha}^{{{b}}} = {beta}^{{{a}}} = ({s}^{{{a}}})^{{{b}}}'))
+
+    return (alpha, beta, key_A)
+
+
+@strict_types
+def caesar_chiffre(key: int, txt: str, decrypt_flag: bool = False, show_details: bool = False) -> str:
+    """ Caesar chiffre. Der gegebene Text wird mithilfe einer Zahl verschlüsselt.
+        Dazu wird jeder Buchstabe im Text ersetzt, mit dem Buchstaben der um die
+        gegebene Zahl nach hinten versetzt im Alphabet steht. (z.B: A mit Schlüssel 1 wird B)
+
+    Args:
+      key: Schlüssel
+      txt: Die zu verschlüsselnde Nachricht
+      decrypt_flag: Wenn True dann wird entschluesselt, sonst wird verschluesselt
+      show_details: Wenn True wird die Umwandlungstabelle angezeigt.
+
+    Returns:
+      Die ver- oder entschluesselte Version des Inputtext, abhaengig vor der decrypt_flag
+    """
+
+    mod = -1 if decrypt_flag else 1
+    txt = ''.join([i for i in txt.upper() if ord(i) in range(65, 91)])
+
+    out = ''
+    for letter in txt:
+        out += chr(((ord(letter) - 65 + key * mod) % 26) + 65)
+
+    if show_details:
+        alphabet = ''.join([chr(i) for i in range(65, 91)])
+        key_alphabet = ''.join([alphabet[(c + key) % 26] for c in range(26)])
+
+        print(f"{'in:':<7}{alphabet}")
+        print(f"{'out:':<7}{key_alphabet}")
+
+    return out
+
+
+@strict_types
+def key_word_chiffre(key_word: str, key_chr: str, txt: str, decrypt_flag: bool = False,
+                     show_details: bool = False) -> str:
+    """ Schluesselwortchiffre. Erstellt mithilfe eines Schluesselworts und eines
+        Schluesselbuchstabens ein "neues Alphabet" mit dem eine Nachricht codiert wird.
+        Das Schluesselwort wird an der Position des Schluesselbuchstabens eingefuegt,
+        die im Schluesselwort vorkommenden Buchstaben werden aus dem Alphabet entfernt.
+        Der Rest des Alphabets wird schliesslich hinter und vor dem Schluesselwort aufgefuellt.
+
+    Args:
+      key_word: Schluesselwort
+      key_chr: Schluesselbuchstabe
+      txt: Zu transformierender Text
+      decrypt_flag: Wenn True dann wird entschluesselt, sonst wird verschluesselt
+      show_details: Wenn True wird das "neue Alphabet" ausgegeben
+
+    Raises:
+      TypeError: Falls eines der Arguments kein string ist
+      ValueError: Falls das Schluesselwort kein isogram ist und falls der Schlüsselbuchstabenstring
+                  mehr als ein Buchstabe erhält.
+
+    Returns:
+      Die ver- oder entschluesselte Version des Inputtext, abhaengig vor der decrypt_flag
+    """
+
+    # Check if input is valid
+    for letter in key_word:
+        if key_word.count(letter) != 1:
+            raise ValueError(
+                f'The key_word has to be a isogram (each letter appears only once)! The letter "{letter}" has multiple appearances in "{key_word}".')
+
+    if len(key_chr) != 1:
+        raise ValueError(
+            f'The key_chr has to be be a string of lenght 1. Your input was "{key_chr}" with length "{len(key_chr)}"!')
+
+    # Clean up the input
+    key_word = key_word.upper()
+    key_chr = key_chr.upper()
+    txt = ''.join([i for i in txt.upper() if ord(i) in range(65, 91)])
+
+    # Get key alphabet
+    alphabet = ''.join([chr(i) for i in range(65, 91)])
+    remain_chr = ''.join([i for i in alphabet if i not in key_word])
+    key_chr_pos = alphabet.find(key_chr)
+    break_pos = len(alphabet) - len(key_word) - key_chr_pos
+    key_alphabet = ''.join(remain_chr[break_pos:] + key_word + remain_chr[0:break_pos])
+
+    # Transform input
+    out = ''
+    for letter in txt:
+        if decrypt_flag:
+            out += key_alphabet[alphabet.find(letter)]
+        else:
+            out += alphabet[key_alphabet.find(letter)]
+
+    if show_details:
+        print(f"{'in:':<7}{alphabet}")
+        print(f"{'out:':<7}{key_alphabet}")
+
+    return out
+
+
+@strict_types
+def vigenere_chiffre(key_word: str, txt: str, decrypt_flag: bool = False, show_details=False) -> str:
+    """ Vignere chiffre. Der gegebene Text wird mithilfe eines Wortes verschlüsselt.
+        Dazu wird das Schlüsselwort mehrfach unter den Text geschrieben. Jeder Buch-
+        stabe im Text wird nun um die Position des Buchstabens im Schlüsselwort
+        verschoben. (A-Z = 0-25)
+
+    Args:
+      key_word: Das Schlüsselwort
+      txt: Zu transformierender Text
+      decrypt_flag: Wenn True dann wird entschluesselt, sonst wird verschluesselt
+      show_details: Wenn True wird die Umwandlungstabelle ausgegeben.
+
+    Raises:
+      ValueError: Falls das Schluesselwort kein Isogram ist.
+
+    Returns:
+      Die ver- oder entschluesselte Version des Inputtext, abhaengig vor der decrypt_flag
+    """
+
+    # Check if key is valid
+    for letter in key_word:
+        if key_word.count(letter) != 1:
+            raise ValueError(
+                f'The key_word has to be a isogram (each letter appears only once)! The letter "{letter}" has multiple appearances in "{key_word}".')
+
+    mod = -1 if decrypt_flag else 1
+    txt = ''.join([i for i in txt.upper() if ord(i) in range(65, 91)])
+    key_word = key_word.upper()
+    key_str = ''.join([key_word[nr % len(key_word)] for nr, letter in enumerate(txt)])
+
+    out = ''
+    for nr, letter in enumerate(txt):
+        offset = ord(key_str[nr]) - 65
+        n = (ord(letter) - 65 + offset * mod) % 26
+        out += chr(n + 65)
+
+    if show_details:
+        print(f"{'in:':<7}{txt}")
+        print(f"{'key:':<7}{key_str}")
+
+    return out
+
+
     return new % m
+
 
 def disk_exp_func(a, b, m, log=False, steps=False):
     """Implementierung von der diskreten exponential Funktion
@@ -631,6 +954,7 @@ def disk_exp_func(a, b, m, log=False, steps=False):
     else:
         return count
 
+
 def qr_and_nr(n, eulersteps=False, steps=False):
     """Implementierung von quadratischem Rest und Nicht-rest
     
@@ -672,3 +996,4 @@ def qr_and_nr(n, eulersteps=False, steps=False):
         display(Math(f"quadratische\ nichtrest\ NR = \{{{str(nr)[1:-1]} \}}"))
 
     return qr, nr
+
