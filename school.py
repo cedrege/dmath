@@ -372,6 +372,31 @@ def calc_inv_based_on_euler_phi_set(n: int, steps=False, euclid_ext_steps=False)
     return subset
 
 
+def euler_qr_nr_criterion(p: int, a: int, steps=False) -> bool:
+    """ Implementierung des Euler Kriteriums bezüglich Quadratischem Restwert und Quadratischem nicht Restwert
+
+        Wikipedia Link: https://en.wikipedia.org/wiki/Euler%27s_criterion
+    
+    Args:
+      p: Primzahl
+      a: Teilerfremde Zahl zum Parameter "p"
+      steps: Wenn True, zeigt Schritte auf
+      
+    Returns:
+      True, wenn a einen Quadratischen Rest mod p aufweist - sonst False
+    """
+    if euclid_ggt(p, a) != 1:
+        raise ValueError("a must be coprime to p")
+
+    res = a**((p-1) // 2) % p
+
+    if steps:
+        display(Math(f"a^{{\\frac{{p-1}}{{2}}}} = {a}^{{\\frac{{{p}-1}}{{2}}}} = {a}^{{{(p-1) // 2}}}"))
+        display(Math(f"{a}^{{\\frac{{{p}-1}}{{2}}}} \equiv {res if res == 1 else res - p} \mod {p}"))
+
+    return True if res == 1 else False
+
+
 def crt(a: tuple, b: tuple, *args: tuple, steps=False) -> int:
     """ Implementation der Chinesischen Restwerts mit steps. Diese Funktion löst ein
         x für 2 oder mehrere Modulo Operationen auf.
@@ -570,7 +595,7 @@ def sma(n, p, m, steps=False):
       m: modulo
       steps: wenn True zeigt es Schritte an
     Returns:
-      n^p%m"""
+      n^p % m"""
     binary = bin(p)
     binary = binary[2:]
     binary_short = str(binary[1:])
@@ -874,4 +899,101 @@ def vigenere_chiffre(key_word: str, txt: str, decrypt_flag: bool = False, show_d
         print(f"{'key:':<7}{key_str}")
 
     return out
+
+
+    return new % m
+
+
+def disk_exp_func(a, b, m, log=False, steps=False):
+    """Implementierung von der diskreten exponential Funktion
+    
+    Args(wenn log = False):
+      Gleichung dieser Art von links nach rechts: 7 = 3^k mod 17
+      a: linke Seite
+      b: rechte seite
+      m: modulo
+      steps: wenn True zeigt es Schritte an
+
+    Args(wenn log = True):
+      Gleichung dieser Art von links nach rechts: k = log3(7) mod 17
+      a: Basis des logs
+      b: Argument im Log
+      m: modulo
+      steps: wenn True zeigt es Schritte an
+    Returns:
+      gibt k zurück für:
+      Lösung für Gleichung k = loga(b) mod m 
+      oder
+      Lösung für Gleichung a = b^k mod m
+      
+      wenn keine Lösung existiert, wird None zurückgegeben"""
+    if log:
+        display(Math(f'"k\ =\ log_{{{a}}}({b})\ mod\ {m}"\ wird\ umgeformt\ in\ "{b}\ =\ {a}^k\ mod\ {m}"'))
+        print()
+        a, b = b, a
+        
+    tl = [[],[]]
+    count=0
+    for i in range(1, m+1):
+        count += 1
+        tl[0].append(i)
+        tl[1].append((b**i)%m)
+        if b**i%m == a:
+            break
+    if steps:
+        display(Math(f"Frage\ ist:\ wann\ ist\ {a}\ =\ {b}^k\ mod\ 17"))
+        print(DataFrame((tl), index=["k",f"{b}^k mod {m}"], columns=[str(" ") for x in range(count)]))
+        print()
+        if count == m:
+            display(Math("Antwort:\ es\ gibt\ keine\ Lösung"))
+        else:
+            display(Math(f"Antwort:\ {a}\ =\ {b}^{count}\ mod\ {m}"))
+            display(Math(f"oder\ kurz:\ k\ =\ {count}"))
+    if count == m:
+        return None
+    else:
+        return count
+
+
+def qr_and_nr(n, eulersteps=False, steps=False):
+    """Implementierung von quadratischem Rest und Nicht-rest
+    
+    Args:
+      n: die Modulo Zahl für welche alles berechnet wird
+      eulersteps: zeigt die schritte für die euler_phi_set an
+      steps: wenn True zeigt es Schritte an
+    Returns:
+      quadratischer Rest und quadratischer nicht-rest"""
+    numbers = sorted(euler_phi_set(n, steps=eulersteps))
+    tl = [[],[]]
+    for i in numbers:
+        tl[0].append(i)
+        tl[1].append((i**2) % n)
+    if steps:
+        print(DataFrame((tl), index=["x",f"x^2 mod {n}"], columns=[str(" ") for x in range(len(numbers))]))
+
+    tl2 = [[],[]]
+    qr = []
+    nr = []
+    for i in numbers:
+        if i in tl[1]:
+            a = i
+            indices = [i for i, x in enumerate(tl[1]) if x == a]
+            indices_new = []
+            for j in indices:
+                indices_new.append(tl[0][j]) 
+            tl2[0].append(i)
+            tl2[1].append(indices_new)
+            qr.append(i)
+        else:
+            tl2[0].append(i)
+            tl2[1].append("-")
+            nr.append(i)
+    if steps:
+        print(DataFrame((tl2), index=["a",f"sqrt(a) mod {n}"], columns=[str(" ") for x in range(len(numbers))]))
+        print()
+        display(Math(f"quadratische\ rest\ QR\ = \{{{str(qr)[1:-1]} \}}"))
+        display(Math(f"quadratische\ nichtrest\ NR = \{{{str(nr)[1:-1]} \}}"))
+
+    return qr, nr
 
