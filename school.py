@@ -310,7 +310,8 @@ def euler_phi(n: int, steps=False, primfac_steps=False) -> int:
                     stepsstr.append(f"({i - 1}) \cdot {i}^{{{prime_factors.count(i) - 1}}}")
         
         stepsstr_n = '\cdot'.join(stepsstr)
-        display(Math(f"\Phi(n) = {stepsstr_n} = {base_value}"))
+        if steps:
+            display(Math(f"\Phi(n) = {stepsstr_n} = {base_value}"))
 
     return base_value
 
@@ -508,7 +509,8 @@ def small_fermat(a: int,b: int,x: int, steps=False):
       steps: Wenn True, zeigt Schritte auf
       
     Returns:
-      a^b mod x
+      a^b mod x wenn alg durchführbar
+      sonst: False
       
     """
     if check_prime(x):
@@ -531,11 +533,15 @@ def small_fermat(a: int,b: int,x: int, steps=False):
             display(Math(f'{a**exp_rest%x}\ mod\ {x}'))
         else:
             display(Math(f'{a**exp_rest%x}\ mod\ {x}'))
+
+        return a**b % x
         
     else:
         print('Kleiner Fermat funktioniert nur wenn mod einer Primzahl')
         display(Math(f'{a}^{{{b}}}\ mod\ {x}'))
         display(Math(f'{a**b%x}\ mod\ {x}'))
+        
+        return False
 
 
 def euler_prime(x: int, y=0):
@@ -997,3 +1003,40 @@ def qr_and_nr(n, eulersteps=False, steps=False):
 
     return qr, nr
 
+def euler_theorem(a: int,b: int,x: int, steps=False, primsteps=False):
+    """implementierung für step by step Anleitung des Satzes von Euler
+    
+    Args:
+      a: Basis
+      b: Exponent
+      x: zu welchem modulo
+      steps: Wenn True, zeigt Schritte auf
+      
+    Returns:
+      a^b mod x wenn alg durchführbar
+      sonst: False
+      
+    """
+    if b >= euler_phi(x) and euclid_ggt(a,x) == 1:
+        if steps:
+            euler = euler_phi(x)
+            new_exp = b // (euler_phi(x))
+            exp_rest = b % (euler_phi(x))
+            euler_phi(x, steps=steps, primfac_steps=primsteps)
+            display(Math(f'{a}^{{{b}}}\ =\ {a**b%x}\ mod\ {x}'))
+            display(Math(f'({a}^{{{euler}}})^{{{new_exp}}}\ *\ {a}^{{{exp_rest}}}\ mod\ {x}'))
+            display(Math(f'({a}^{{{euler}}}\ mod\ {x})^{{{new_exp}}}\ *\ {a}^{{{exp_rest}}}\ mod\ {x}'))
+            display(Math('Satz\ von\ Euler\ =>\ a^{\Phi(n)}\ =\ 1\ mod\ n'))
+            display(Math(f'1^{{{new_exp}}}\ *\ {a}^{{{exp_rest}}}\ mod\ {x}'))
+            display(Math(f'{a}^{{{exp_rest}}}\ mod\ {x}'))
+            display(Math(f'{a**exp_rest}\ mod\ {x}'))
+
+        return a**b % x
+
+    if b <= euler_phi(x):
+        raise ValueError(f"exponent muss grösser als phi({x}) == {euler_phi(x)} sein")
+        return False
+
+    if euclid_ggt(a,x) != 1:
+        raise ValueError(f'{a} und {x} sind nicht teilerfrenmd. ggt = {euclid_ggt(a,x)} also != 1 => use square and multiply (sma)')
+        return False
