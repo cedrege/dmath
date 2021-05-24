@@ -29,7 +29,8 @@ class dmath():
 
 # Documentationstyleguide: https://google.github.io/styleguide/pyguide.html
 from pandas import DataFrame
-from numpy import cumsum, e
+from numpy import cumsum, e, ndarray, array as np_array_const, reciprocal, identity as identity_matrix
+from numpy.linalg import matrix_rank, inv as matrix_inverse
 from IPython.display import display, Math
 from functools import reduce
 from math import log
@@ -1040,3 +1041,60 @@ def euler_theorem(a: int,b: int,x: int, steps=False, primsteps=False):
     if euclid_ggt(a,x) != 1:
         raise ValueError(f'{a} und {x} sind nicht teilerfrenmd. ggt = {euclid_ggt(a,x)} also != 1 => use square and multiply (sma)')
         return False
+
+def page_rank(adjugate_matrix: ndarray, dampening_factor: float, steps=False) -> ndarray:
+    """ Berechnet den PageRank eines Graphen anhand der Adjunkten matrix.
+
+    Args:
+        adjugate_matrix:        Adjunkten matrix des gerichteten Graphen.
+                                Diese Matrix wird immer "Column verbindet Row" aufgebau.
+                                Diese muss richtig erstellt werden sonst ist das Resultat falsch. (Nicht nur Zahlen sondern auch die Row Column)
+        dampening_factor:       Daempfungsfaktor der Aufgabe.
+        steps:                  (Optional) gibt den Rechenweg aus.
+
+    Returns:
+        Vector mit den PageRank Werten.
+    """
+
+    if dampening_factor > 1:
+        raise ValueError("Dampening factor must be between 0 and 1.")
+
+    if adjugate_matrix.shape[0] != adjugate_matrix.shape[1]:
+        raise ValueError("Adjugate matrix must be a square matrix.")
+
+    dampening_complement = 1 - dampening_factor
+    adjugate_size = int(adjugate_matrix.shape[0])
+
+    # PR vector with unknown vars
+    pr = [f"PR_{x+1}" for x in range(adjugate_size)]
+    
+    # calculate vector b
+    b = np_array_const([dampening_complement * (1 / adjugate_size) for x in range(adjugate_size)]).reshape(adjugate_size, 1)
+
+    dampening_complement_reciprocal = int(reciprocal(dampening_complement))
+    I = (identity_matrix(adjugate_size) * dampening_complement_reciprocal)
+    A = (adjugate_matrix * dampening_complement_reciprocal * dampening_factor)
+    A_tilde = I - A
+
+    if matrix_rank(A_tilde) != adjugate_size:
+        raise ValueError("Rank of adjugate_matrix_tilde is not equal to the shape of adjugate_matrix. Most likely a typo in your adjugate_matrix.")
+    
+    r = matrix_inverse(A_tilde) @ (b * dampening_complement_reciprocal)
+
+    if steps:
+        pr_dis_str = " \\\\ ".join(pr)
+        display(Math(f"\\vec{{r}} = \\begin{{bmatrix}} {pr_dis_str} \\end{{bmatrix}}"))
+        b_dis_str = " \\\\ ".join([f"\\frac{{1}}{{{str(int(reciprocal(x)))}}}" for x in b.flat])
+        display(Math(f"\\vec{{b}} = \\begin{{bmatrix}} {b_dis_str} \\end{{bmatrix}}"))
+
+        # Print calc way:
+        display(Math(f"I \cdot \\vec{{r}} = A \cdot \\vec{{r}} + \\frac{{1}}{{{dampening_complement_reciprocal}}} \cdot \\vec{{b}}"))
+        display(Math(f"(I - A) \cdot \\vec{{r}} = \\frac{{1}}{{{dampening_complement_reciprocal}}} \cdot \\vec{{b}}"))
+        display(Math(f"\\underbrace{{{dampening_complement_reciprocal}(I - A)}}_{{\\tilde{{A}}}} \cdot \\vec{{r}} = \\vec{{b}}"))
+        display(Math(f"\\vec{{r}} = \\tilde{{A}}^{{-1}} \cdot \\vec{{b}}"))
+
+        # Print r
+        r_dis_str = " \\\\ ".join(str(x) for x in r.flat)
+        display(Math(f"\\vec{{r}} = \\begin{{bmatrix}} {r_dis_str} \\end{{bmatrix}}"))
+
+    return r
