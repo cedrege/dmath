@@ -521,7 +521,7 @@ def small_fermat(a: int,b: int,x: int, steps=False):
             display(Math(f'(\f{a}^{{{x-1}}})^{{{new_exp}}}\ *\ {a}^{{{exp_rest}}} \ mod\ {x}'))
             display(Math(f'(\f{a}^{{{x-1}}}\ mod\ {x})^{{{new_exp}}}\ *\ {a}^{{{exp_rest}}}\ mod\ {x}'))
             display(Math('Kleiner\ Satz\ von\ Fermat\ =>\ m^{(p-1)}\ mod\ p\ =\ 1\ ||\ wenn\ p\ =\ prime'))
-            display(Math(f'1^{{{new_exp}}}\ mod\ {x}'))
+            display(Math(f'1^{{{new_exp}}}*\ {a}^{{{exp_rest}}}\ mod\ {x}'))
             display(Math(f'{a**exp_rest}\ mod\ {x}'))
         if steps and exp_rest == 0:
             display(Math(f'(\f{a}^{{{x-1}}})^{{{new_exp}}}\ mod\ {x}'))
@@ -567,7 +567,7 @@ def euler_prime(x: int, y=0):
         display(Math(f"{{{x/log(x)}}}"))
 
 
-def bayes(fpr, fnr, verb): #oder 1-spezifität, 1-sensitivität, verb
+def bayes(fpr, fnr, verb, steps = False): #oder 1-spezifität, 1-sensitivität, verb
     """Implementierung von Bayes rule
     
     Args:
@@ -577,6 +577,7 @@ def bayes(fpr, fnr, verb): #oder 1-spezifität, 1-sensitivität, verb
       
     Returns:
       alle möglichen chancen nach erfolgtem Test"""
+    display(Math("Bayes\ Rule:\ P(A|B)\ =\ \\frac{P(B|A)*P(A)}{P(B)}"))
     sensitivity = 1-fnr
     spezifitaet = 1-fpr
 
@@ -947,7 +948,7 @@ def disk_exp_func(a, b, m, log=False, steps=False):
         if b**i%m == a:
             break
     if steps:
-        display(Math(f"Frage\ ist:\ wann\ ist\ {a}\ =\ {b}^k\ mod\ 17"))
+        display(Math(f"Frage\ ist:\ wann\ ist\ {a}\ =\ {b}^k\ mod\ {m}"))
         print(DataFrame((tl), index=["k",f"{b}^k mod {m}"], columns=[str(" ") for x in range(count)]))
         print()
         if count == m:
@@ -1035,8 +1036,11 @@ def euler_theorem(a: int,b: int,x: int, steps=False, primsteps=False):
 
     if b <= euler_phi(x):
         raise ValueError(f"exponent muss grösser als phi({x}) == {euler_phi(x)} sein")
-        return False
+        
 
     if euclid_ggt(a,x) != 1:
         raise ValueError(f'{a} und {x} sind nicht teilerfrenmd. ggt = {euclid_ggt(a,x)} also != 1 => use square and multiply (sma)')
-        return False
+        
+def display_bayes():
+    display(Math("Bayes\ Rule:\ P(A|B)\ =\ \\frac{P(B|A)*P(A)}{P(B)}"))
+    display(Math("Bayes\ Rule\ extended:\ P(A|B)\ =\ \\frac{P(B|A)*P(A)}{P(B|A)*P(A)+P(B|\\neg A)* P(\\neg A))}"))
