@@ -30,12 +30,12 @@ class dmath():
 # Documentationstyleguide: https://google.github.io/styleguide/pyguide.html
 from pandas import DataFrame
 from numpy import cumsum, e, ndarray, array as np_array_const, reciprocal, identity as identity_matrix
-from numpy.linalg import matrix_rank, inv as matrix_inverse
+from numpy.linalg import matrix_rank, inv as matrix_inverse, det as matrix_det
 from IPython.display import display, Math
 from functools import reduce
-from math import log
+from math import log, comb, factorial
 from typing import get_type_hints
-
+from sympy import Symbol, Poly
 
 def strict_types(function):
     def type_checker(*args, **kwargs):
@@ -66,7 +66,7 @@ def strict_types(function):
 
 
 def fac(n: int) -> int:
-    return n * fac(n-1) if n > 1 else 1
+    return factorial(n)
 
 
 def binomial_coefficient(n: int, k: int) -> float:
@@ -84,17 +84,18 @@ def binomial_coefficient(n: int, k: int) -> float:
     Returns:
       Binomialkoeffizient, berechnet aus den angegeben Parametern
     """
-    dividend = 1
-    divisor = 1
+    return comb(n, k)
+    #dividend = 1
+    #divisor = 1
 
-    for i in range(n, n-k, -1):
-        dividend *= i
-        divisor  *= ((n - i) + 1)
+    #for i in range(n, n-k, -1):
+    #    dividend *= i
+    #    divisor  *= ((n - i) + 1)
     
-    if divisor == 0:
-        raise ValueError("Divisor is zero! Check parameters")
+    #if divisor == 0:
+    #    raise ValueError("Divisor is zero! Check parameters")
 
-    return dividend / divisor
+    #return dividend / divisor
 
 
 def binomial_distribution(n: int, k: int, p: int) -> float:
@@ -163,6 +164,54 @@ def cumsum_poisson_distribution(my: int, sum_range: tuple) -> float:
     return sum
 
 
+def generating_function(result, anz_vars, limits: list = None):
+    """ Generiert ein Polynom welches für diverse counting Probleme genutzt werden kann.
+
+    Args:
+         result:   Resultat des Ausdrucks. z.B (rechte Seite vom "="): x1 + x2 + x3 = 17
+         anz_vars: Anzahl verschiedener Variablem im Ausdruck. z.B (linke Seite vom "="): x1 + x2 + x3 = 17
+         limits:   (Optional) Upper und lower bound für die Variablen. Dies wird jeweils in einem Tuple in einer Liste angegeben. 
+                   Die Einträge werden nacheinander auf die einzelnen Variablen angewandt. Beachte: wenn z.B erst ab der
+                   zweiten Variable eine Einschränkung gilt, so kann diese auch ganz an den Schluss des Ausdrucks. Somit
+                   spielt die Reihenfolge der Tupeln in der Liste eingetlich keine Rolle.
+
+                   bsp:
+                   1 < x1 <= 6,
+                   x2,
+                   4 <= x3 < 9
+
+                   Kann so angegeben werden: [(2,6), (4,8)]
+    
+    Returns:
+         sympy.Poly(), auf welches mit var_name.nth(11) auf die Anzahl Möglichkeiten fuer x^11 zugegriffen werden kann.
+         (oder einfach das Ganze Poly anschauen)
+    """
+    x = Symbol("x")
+    P_curr = 0
+    P_arr_tmp = []
+
+    if limits:
+        for domain in limits:
+            for i in range(domain[0], domain[1] + 1):
+                P_curr += (x**i)
+            P_arr_tmp.append(P_curr)
+            P_curr = 0
+
+        if len(limits) < anz_vars:
+            for i in range(result + 1): P_curr += (x**i)
+            for i in range(anz_vars - len(limits)):  P_arr_tmp.append(P_curr)
+            P_curr = 0
+    else:
+        for i in range(result + 1):
+            P_curr += (x**i)
+        for j in range(anz_vars): P_arr_tmp.append(P_curr)
+        P_curr = 0
+
+    P_arr = [Poly(p) for p in P_arr_tmp]
+
+    return reduce(lambda x,y: x * y, P_arr)
+
+
 def ewfin(n: int, p: float):
     complement = 1 - p
     arr = [p]
@@ -180,6 +229,54 @@ def ewfin(n: int, p: float):
     tl = [[str(x) for x in range(n+1)], arr2, cumsum(arr2)]
     print(DataFrame(tl, index=["Xi", "P(x = Xi)", "sum(P(x))"], columns=[str(" ") for x in range(n+1)]))
     print(f"\nErwartungswert: {sum(arr2)}")
+
+
+def erwartungswert(rmin, rmax, chance_success , intervall=1, steps = False):
+    """ Berechnet den Erwartungswert
+
+    Args:
+        rmin:           Startwert des Intervalls
+        rmax:           Endwert des Intervalls
+        chance_success: Chance auf Erfolg bei den Versuchen
+        intervall:      (Optional) Schritte in welchem sich rmin, rmax nähert. (Standard 1)
+        steps:          Zeigt die Schritte auf
+
+    Returns:
+        Dict mit Erwartungswert und dessen Varianz
+    """
+    erg = (1 - chance_success, chance_success)
+
+    tmp = []
+    s = 0
+    for i in range(rmin, rmax + 1, intervall):
+        val = i * (comb(rmax, i) * erg[0]**(rmax / intervall - i) * erg[1]**(i / intervall))
+        tmp.append(val)
+        s += val
+    
+    if steps:
+        print("ERWARTUNGSWEG:")
+        display(Math(f"Formel: \ s =  \sum\limits_{{i = {rmin}}}^{{{rmax}}} i \cdot \\biggl( \\begin{{matrix}} {rmax} \\\\ i \\end{{matrix}}  \\biggl) \cdot {erg[0]}^{{{rmax} - i}} \cdot {erg[1]}^{{{i}}} "))
+        tl = [[str(x) for x in range(rmax+1)], tmp, cumsum(tmp)]
+        print(DataFrame(tl, index=["Xi", "P(x = Xi)", "sum(P(x))"], columns=[str(" ") for x in range(rmax+1)]))
+        print()
+        print()
+
+    tmp_var = []
+    s_var = 0
+    for i in range(rmin, rmax + 1, intervall):
+        val = (i-s)**2 * (comb(rmax, i) * erg[0]**(rmax / intervall - i) * erg[1]**(i / intervall))
+        tmp_var.append(val)
+        s_var += val
+    
+    if steps:
+        print("VARIANZ:")
+        display(Math(f"Formel: \ v = \sum\limits_{{i = {rmin}}}^{{{rmax}}} (i - s)^2 \cdot \\biggl( \\begin{{matrix}} {rmax} \\\\ i \\end{{matrix}}  \\biggl) \cdot {erg[0]}^{{{rmax} - i}} \cdot {erg[1]}^{{{i}}} "))
+        tl = [[str(x) for x in range(rmax+1)], tmp_var, cumsum(tmp_var)]
+        print(DataFrame(tl, index=["Xi", "P(x = Xi)", "sum(P(x))"], columns=[str(" ") for x in range(rmax+1)]))
+        print()
+        print()
+    
+    return {"Erwartungswert" : round(s, 13), "Varianz" : round(s_var, 13)}
 
 
 def prime_facs(n: int, steps=False) -> list:
@@ -230,7 +327,23 @@ def euclid_ggt(a: int, b: int, steps = False) -> int:
     Returns:
       Groesster gemeinsamer Teiler von a und b
     """
-    return euclid_ggt_print(a, b, steps)
+    first_round = a // b
+    return euclid_ggt_print(a, b, steps, first_round)
+
+
+def euclid_ggt_buergi(a,b):
+    a_input = a
+    b_input = b
+    u_old, u = 1, 0; v_old, v = 0, 1
+    display(Math(f"{a}\ |\ {'-'}\ |\  {u_old}\ |\ {v_old}"))
+    while b:
+        q = a // b
+        u, u_old = u_old - q * u, u
+        v, v_old = v_old - q * v, v
+        a, b = b, a % b
+        display(Math(f"{a}\ |\ {q}\ |\  {u_old}\ |\ {v_old}"))
+    display(Math(f"{u_old*a_input + v_old * b_input} = {u_old} * {a_input} + {v_old} * {b_input}"))
+    return a, u_old, v_old
 
 
 def euclid_ggt_extended_print(a: int, b: int, steps = False):
@@ -922,6 +1035,90 @@ def vigenere_chiffre(key_word: str, txt: str, decrypt_flag: bool = False, show_d
     return new % m
 
 
+@strict_types
+def gen_prime(i:int)-> int:
+    """ Primzahlengenerator. Liefert die erste Primzahl nach i oder i selber falls i
+        eine Primzahl ist.
+    
+    Args:
+      i: Integer von dem aus eine Primzahl gesucht wird.  
+
+    Returns:
+      Primzahl
+    """
+    found = False
+    i-=1
+    
+    while not found:
+        i+=1
+        found = check_prime(i)
+        
+    return i
+
+
+@strict_types
+def rsa_keygen(p: int, q: int, e: bool = None, d: bool = None)-> tuple:
+    """ RSA Keygeneration. Nimmt Primzahlen p und q und Schlüssel e und d. 
+        Falls e und d nicht gegeben sind werden sie generiert.
+    
+    Args:
+        p: Primzahl
+        q: Primzahl
+        e: Schlüssel
+        d: Schlüssel
+      
+    Returns:
+      Das Produkt von q und p = n, sowie den privaten Schuessel d sowie den öffentlichen 
+      Schluessel d.
+    """
+    
+    n = p*q
+    n_phi = (p-1)*(q-1)
+    
+    if e is None:
+        e = int(n_phi/4)
+    
+    if d is None:
+        while euclid_ggt(n_phi, e) != 1:
+            e-=1
+
+        d = euclid_ggt_extended(e, n_phi)[0]
+    
+    print(f"{'Primzahl p:':<15}{p:>20}")
+    print(f"{'Primzahl q:':<15}{q:>20}")
+    print(f"{'Produkt n:':<15}{n:>20}")
+    print(f"{'e. phi von n:':<15}{n_phi:>20}")
+    print()
+    print(f"{'priv. key d:':<15}{d:>20}")
+    print(f"{'oeff. key e:':<15}{e:>20}")
+  
+    return n, e, d
+
+
+@strict_types
+def rsa(n: int, k: int, m: int)-> int:
+    
+    """ Diese Funktion Ver- oder Entschluesselt die Nachricht m mithilfe des Primzahlenprodukts n
+        und des (oeffentlichen oder privaten) Schluessels.
+    
+    Args:
+        n: Primzahlenprodukt aus p und q  
+        k: Schluessel d oder e
+        m: 'Nachricht' in Form eines Integers, welche ver- oder entschluesselt werden soll.
+        
+    Raises:
+        ValueError: Falls n <= m ist.
+
+    Returns:
+        Ver- oder entschluesselte Nachricht.
+    """
+    
+    if n <= m:
+        raise ValueError(f'm has to be smaller than n! ({m} !< {n})')
+        
+    return (m**k) % n
+
+
 def disk_exp_func(a, b, m, log=False, steps=False):
     """Implementierung von der diskreten exponential Funktion
     
@@ -1015,6 +1212,7 @@ def qr_and_nr(n, eulersteps=False, steps=False):
 
     return qr, nr
 
+
 def euler_theorem(a: int,b: int,x: int, steps=False, primsteps=False):
     """implementierung für step by step Anleitung des Satzes von Euler
     
@@ -1051,7 +1249,7 @@ def euler_theorem(a: int,b: int,x: int, steps=False, primsteps=False):
 
     if euclid_ggt(a,x) != 1:
         raise ValueError(f'{a} und {x} sind nicht teilerfrenmd. ggt = {euclid_ggt(a,x)} also != 1 => use square and multiply (sma)')
-        return False
+
 
 def page_rank(adjugate_matrix: ndarray, dampening_factor: float, steps=False) -> ndarray:
     """ Berechnet den PageRank eines Graphen anhand der Adjunkten matrix.
@@ -1109,10 +1307,33 @@ def page_rank(adjugate_matrix: ndarray, dampening_factor: float, steps=False) ->
         display(Math(f"\\vec{{r}} = \\begin{{bmatrix}} {r_dis_str} \\end{{bmatrix}}"))
 
     return r
-        
+
+
+def amount_spanning_trees(A: ndarray, D: ndarray, steps: bool = False) -> int:
+    """Berechnet die Anzahl Spannbäume im Graphen mit dem Linalg Weg
+
+    Args:
+        A: Adjugate matrix vom Graphen
+        D: Degree matrix vom Graphen
+        steps: Ausgabe des Rechenweges
+    
+    Returns:
+        Maximale Anzahl an Spannbäumen
+    """
+    L = (D - A)[:-1,:-1]
+    
+    if steps:
+        display(Math("L = D - A"))
+        display(Math("Eine \ Dimension \ entfernen"))
+        display(Math(f"det(L) = {int(matrix_det(L))}"))
+
+    return int(matrix_det(L))
+
+
 def display_bayes():
     display(Math("Bayes\ Rule:\ P(A|B)\ =\ \\frac{P(B|A)*P(A)}{P(B)}"))
     display(Math("Bayes\ Rule\ extended:\ P(A|B)\ =\ \\frac{P(B|A)*P(A)}{P(B|A)*P(A)+P(B|\\neg A)* P(\\neg A))}"))
+
 
 def derangements(n):
     """Implementierung von derangements
@@ -1127,6 +1348,7 @@ def derangements(n):
         a += (-1)**i*fac(n)/fac(i)
 
     return a
+
 
 def nullteiler(n):
     """Nullteiler
@@ -1223,5 +1445,3 @@ def perf_savety(function: list, chance_messages: dict, chance_keys: dict):
                     display(Math(f"Chance\ for\ ( {current_message} | {current_cypher} )\ =\ {chance_messages[current_message] * chance_keys[function[indices_messages[current_message][i]-1]] / chances_cypher[current_cypher]}"))
             print()
                     #print(f"chance for ( {current_message} | {current_cypher} ) = {chance_messages[current_message] * chance_keys[function[indices_messages[current_message][i]-1]] / chances_cypher[current_cypher]}")
-      
-
