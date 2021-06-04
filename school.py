@@ -522,7 +522,7 @@ def small_fermat(a: int,b: int,x: int, steps=False):
             display(Math(f'(\f{a}^{{{x-1}}})^{{{new_exp}}}\ *\ {a}^{{{exp_rest}}} \ mod\ {x}'))
             display(Math(f'(\f{a}^{{{x-1}}}\ mod\ {x})^{{{new_exp}}}\ *\ {a}^{{{exp_rest}}}\ mod\ {x}'))
             display(Math('Kleiner\ Satz\ von\ Fermat\ =>\ m^{(p-1)}\ mod\ p\ =\ 1\ ||\ wenn\ p\ =\ prime'))
-            display(Math(f'1^{{{new_exp}}}\ mod\ {x}'))
+            display(Math(f'1^{{{new_exp}}}*\ {a}^{{{exp_rest}}}\ mod\ {x}'))
             display(Math(f'{a**exp_rest}\ mod\ {x}'))
         if steps and exp_rest == 0:
             display(Math(f'(\f{a}^{{{x-1}}})^{{{new_exp}}}\ mod\ {x}'))
@@ -568,7 +568,7 @@ def euler_prime(x: int, y=0):
         display(Math(f"{{{x/log(x)}}}"))
 
 
-def bayes(fpr, fnr, verb): #oder 1-spezifität, 1-sensitivität, verb
+def bayes(fpr, fnr, verb, steps = False): #oder 1-spezifität, 1-sensitivität, verb
     """Implementierung von Bayes rule
     
     Args:
@@ -578,8 +578,18 @@ def bayes(fpr, fnr, verb): #oder 1-spezifität, 1-sensitivität, verb
       
     Returns:
       alle möglichen chancen nach erfolgtem Test"""
+    display(Math("Bayes\ Rule:\ P(A|B)\ =\ \\frac{P(B|A)*P(A)}{P(B)}"))
     sensitivity = 1-fnr
     spezifitaet = 1-fpr
+    if steps:
+      display(Math(f"P(+|T+)\ =>\ \\frac{{{f'{sensitivity} * {verb}'}}}{{{f'{sensitivity} * {(verb)} + {fpr} * {1-verb}'}}}\ =\ {sensitivity * verb / (sensitivity * verb + fpr * (1-verb))}"))
+      display(Math(f"P(-|T+)\ =>\ 1-{sensitivity * verb / (sensitivity * verb + fpr * (1-verb))}"))
+      display(Math(f"P(-|T-)\ =>\ \\frac{{{f'{spezifitaet} * {1-verb}'}}}{{{f'{spezifitaet} * {(1-verb)} + {fnr} * {verb}'}}}\ =\ {spezifitaet * (1-verb) / (spezifitaet * (1-verb) + fnr * verb)}"))
+      display(Math(f"P(+|T-)\ =>\ 1-{spezifitaet * (1-verb) / (spezifitaet * (1-verb) + fnr * verb)}"))
+
+      display(Math(f"P(T+)\ =>\ {verb}*{sensitivity}+{1-verb}*{fpr}\ =\ {verb * sensitivity + (1-verb) * fpr} "))
+      display(Math(f"P(T-)\ =>\ {verb}*{fnr}+{1-verb}*{spezifitaet}\ =\ {verb * fnr + (1-verb) * spezifitaet} "))
+
 
     bayes_pos = sensitivity * verb / (sensitivity * verb + fpr * (1-verb))
     bayes_neg = spezifitaet * (1-verb) / (spezifitaet * (1-verb) + fnr * verb)
@@ -591,6 +601,7 @@ def bayes(fpr, fnr, verb): #oder 1-spezifität, 1-sensitivität, verb
     print("chance nach neg. test wenn NICHT neg.:", 1-bayes_neg)
     print("abs. wahrscheinlichkeit für pos. Ereignis:", abs_pos)
     print("abs. wahrscheinlichkeit für neg. Ereignis:", abs_neg)
+
 
 
 def sma(n, p, m, steps=False):
@@ -948,7 +959,7 @@ def disk_exp_func(a, b, m, log=False, steps=False):
         if b**i%m == a:
             break
     if steps:
-        display(Math(f"Frage\ ist:\ wann\ ist\ {a}\ =\ {b}^k\ mod\ 17"))
+        display(Math(f"Frage\ ist:\ wann\ ist\ {a}\ =\ {b}^k\ mod\ {m}"))
         print(DataFrame((tl), index=["k",f"{b}^k mod {m}"], columns=[str(" ") for x in range(count)]))
         print()
         if count == m:
@@ -1036,7 +1047,7 @@ def euler_theorem(a: int,b: int,x: int, steps=False, primsteps=False):
 
     if b <= euler_phi(x):
         raise ValueError(f"exponent muss grösser als phi({x}) == {euler_phi(x)} sein")
-        return False
+        
 
     if euclid_ggt(a,x) != 1:
         raise ValueError(f'{a} und {x} sind nicht teilerfrenmd. ggt = {euclid_ggt(a,x)} also != 1 => use square and multiply (sma)')
@@ -1098,3 +1109,119 @@ def page_rank(adjugate_matrix: ndarray, dampening_factor: float, steps=False) ->
         display(Math(f"\\vec{{r}} = \\begin{{bmatrix}} {r_dis_str} \\end{{bmatrix}}"))
 
     return r
+        
+def display_bayes():
+    display(Math("Bayes\ Rule:\ P(A|B)\ =\ \\frac{P(B|A)*P(A)}{P(B)}"))
+    display(Math("Bayes\ Rule\ extended:\ P(A|B)\ =\ \\frac{P(B|A)*P(A)}{P(B|A)*P(A)+P(B|\\neg A)* P(\\neg A))}"))
+
+def derangements(n):
+    """Implementierung von derangements
+    
+    Args:
+      n = anzahl verschiedener Einheiten
+      
+    Returns:
+      anzahl der möglichen Derangements"""
+    a = 0
+    for i in range(n+1):
+        a += (-1)**i*fac(n)/fac(i)
+
+    return a
+
+def nullteiler(n):
+    """Nullteiler
+    
+    Args:
+      n = Nummber welche auf Nullteiler geprüft werden
+      
+    Returns:
+      Set mit den Nullteilern"""
+
+    a= []
+    for i in range(1,n):
+        for j in range(1,n):
+            if i*j % n == 0:
+                a.append(i)
+                display(Math(f"{i}*{j}=0\ mod\ {n}"))
+    a  = set(a)
+    display(Math(f"Nullteiler\ sind:\ {a}"))
+    return set(a)
+
+def uniq(input):
+  output = []
+  for x in input:
+    if x not in output:
+      output.append(x)
+  return output
+
+
+def perf_savety(function: list, chance_messages: dict, chance_keys: dict):
+    """implementierung für step by step Anleitung der Perfekten Sicherheit
+    
+    Args:
+      function: Eine Liste die folgendermassen gefüllt wird: Key, message, cyper(welche bei der Verschlüsselung mit dem key und der Nachricht entsteht)
+      chance_messages: ein Dictionary mit den Nachrichten in Verbindung mit der Wahrscheinlichkeit, dass diese auftritt
+      chance_keys: ein Dictionary mit den Keys in Verbindung mit der Wahrscheinlichkeit, dass diese auftritt
+      steps: Wenn True, zeigt Schritte auf
+      
+    Returns:
+      a^b mod x wenn alg durchführbar
+      sonst: False"""
+
+    function_len = len(chance_messages)*len(chance_keys)
+    messages = []
+    cypher_text = []
+    keys = []
+    for i in range(function_len):
+        display(Math(f'function({function[i*3]},\ {function[i*3+1]})\ =\ {function[i*3+2]}'))
+        #print(f"function ({function[i*3]}, {function[i*3+1]}) = {function[i*3+2]}")
+        keys.append(function[i*3])
+        messages.append(function[i*3+1])
+        cypher_text.append(function[i*3+2])
+    cypher_text_uniq = uniq(cypher_text)
+    keys_uniq = uniq(keys)
+    messages_uniqu = uniq(messages)
+
+    indices_cyper_text = {}
+    for j in cypher_text_uniq:
+        indices = [i for i, x in enumerate(function) if x == j]
+        indices_cyper_text[f"{j}"]= indices
+    chances_cypher = {}
+
+    for i in cypher_text_uniq:
+        chance_for_cypher_text = 0
+        for j in indices_cyper_text[i]:
+            display(Math(f"p({i} )\ ==\ {function[j-1]}"))
+            #print(f"p({i}) == {function[j-1]} ")
+            current_message = function[j-1]
+            current_key = function[j-2]
+            current_key_chance = chance_keys[current_key]
+            display(Math(f'\\frac{{1}}{{{int(1/current_key_chance)}}}\ *\ \\frac{{1}}{{{int(1/chance_messages[current_message])}}}\ =\ \\frac{{1}}{{{int(1/(current_key_chance * chance_messages[current_message]))}}}'))
+            #print(f"{current_key_chance} * {chance_messages[current_message]}")
+            chance_for_cypher_text += chance_messages[current_message]*current_key_chance
+        display(Math(f"chance\ for\ p({i})\ =\ {round(chance_for_cypher_text,15)}"))
+        #print(f"chance for p({i}) = {round(chance_for_cypher_text,15)}")
+        print()
+        chances_cypher[i]=(round(chance_for_cypher_text, 15))
+
+    indices_messages = {}
+    for j in chance_messages:
+        indices = [i for i, x in enumerate(function) if x == j]
+        indices_messages[j]= indices
+ 
+    #print("bayes rule")
+    display(Math("Bayes\ Rule:\ P(A|B)\ =\ \\frac{P(B|A)*P(A)}{P(B)}"))
+    display(Math("bei\ mehr\ als\ einer\ Chance,\ müssen\ sie\ addiert\ werden,\ bei\ keiner\ ist\ die\ Chance\ 0"))
+    for current_message in indices_messages:
+        for current_cypher in cypher_text_uniq:
+            display(Math(f"Cyper:{current_cypher}\ Nachricht:{current_message}"))
+            #print("current cypher", current_cypher)
+            #print("current message", current_message)
+            for i in range(len(chance_keys)):
+                if current_cypher == function[indices_messages[current_message][i]+1]:
+                    display(Math(f"{chance_messages[current_message]} * {chance_keys[function[indices_messages[current_message][i]-1]]}/{chances_cypher[current_cypher]}"))
+                    display(Math(f"Chance\ for\ ( {current_message} | {current_cypher} )\ =\ {chance_messages[current_message] * chance_keys[function[indices_messages[current_message][i]-1]] / chances_cypher[current_cypher]}"))
+            print()
+                    #print(f"chance for ( {current_message} | {current_cypher} ) = {chance_messages[current_message] * chance_keys[function[indices_messages[current_message][i]-1]] / chances_cypher[current_cypher]}")
+      
+
