@@ -350,19 +350,32 @@ def euclid_ggt(a: int, b: int, steps = False) -> int:
     return euclid_ggt_print(a, b, steps, first_round)
 
 
-def euclid_ggt_buergi(a,b):
+def euclid_ggt_buergi(a,b, steps = False):
     a_input = a
     b_input = b
     u_old, u = 1, 0; v_old, v = 0, 1
-    display(Math(f"{a}\ |\ {'-'}\ |\  {u_old}\ |\ {v_old}"))
+    if steps:
+        display(Math(f"{a}\ |\ {'-'}\ |\  {u_old}\ |\ {v_old}"))
     while b:
         q = a // b
         u, u_old = u_old - q * u, u
         v, v_old = v_old - q * v, v
         a, b = b, a % b
-        display(Math(f"{a}\ |\ {q}\ |\  {u_old}\ |\ {v_old}"))
-    display(Math(f"{u_old*a_input + v_old * b_input} = {u_old} * {a_input} + {v_old} * {b_input}"))
-    return a, u_old, v_old
+        if steps:
+            display(Math(f"{a}\ |\ {q}\ |\  {u_old}\ |\ {v_old}"))
+    if steps:
+        display(Math(f"{u_old*a_input + v_old * b_input} = {u_old} * {a_input} + {v_old} * {b_input}"))
+    d, s, t = euclid_ggt_extended_print(a_input, b_input)
+    s_1 = s
+    t_1 = t
+    if s < 0: s_1 = s + b_input
+    if t < 0: t_1 = t + a_input
+
+    print()
+    if steps:
+        display(Math(f"{a_input}^{{-1}}\mod {b_input} = {s_1}"))
+        display(Math(f"{b_input}^{{-1}}\mod {a_input} = {t_1}"))
+    return a, s_1, t_1
 
 
 def euclid_ggt_extended_print(a: int, b: int, steps = False):
@@ -715,9 +728,9 @@ def bayes(fpr, fnr, verb, steps = False): #oder 1-spezifität, 1-sensitivität, 
     spezifitaet = 1-fpr
     if steps:
       display(Math(f"P(+|T+)\ =>\ \\frac{{{f'{sensitivity} * {verb}'}}}{{{f'{sensitivity} * {(verb)} + {fpr} * {1-verb}'}}}\ =\ {sensitivity * verb / (sensitivity * verb + fpr * (1-verb))}"))
-      display(Math(f"P(-|T+)\ =>\ 1-{sensitivity * verb / (sensitivity * verb + fpr * (1-verb))}"))
+      display(Math(f"P(-|T+)\ =>\ 1-{sensitivity * verb / (sensitivity * verb + fpr * (1-verb))}\ =\ {1 - (sensitivity * verb / (sensitivity * verb + fpr * (1-verb)))}"))
       display(Math(f"P(-|T-)\ =>\ \\frac{{{f'{spezifitaet} * {1-verb}'}}}{{{f'{spezifitaet} * {(1-verb)} + {fnr} * {verb}'}}}\ =\ {spezifitaet * (1-verb) / (spezifitaet * (1-verb) + fnr * verb)}"))
-      display(Math(f"P(+|T-)\ =>\ 1-{spezifitaet * (1-verb) / (spezifitaet * (1-verb) + fnr * verb)}"))
+      display(Math(f"P(+|T-)\ =>\ 1-{spezifitaet * (1-verb) / (spezifitaet * (1-verb) + fnr * verb)}\ =\ {1- (spezifitaet * (1-verb) / (spezifitaet * (1-verb) + fnr * verb))}"))
 
       display(Math(f"P(T+)\ =>\ {verb}*{sensitivity}+{1-verb}*{fpr}\ =\ {verb * sensitivity + (1-verb) * fpr} "))
       display(Math(f"P(T-)\ =>\ {verb}*{fnr}+{1-verb}*{spezifitaet}\ =\ {verb * fnr + (1-verb) * spezifitaet} "))
@@ -1072,8 +1085,7 @@ def gen_prime(i:int)-> int:
     return i
 
 
-@strict_types
-def rsa_keygen(p: int, q: int, e: bool = None, d: bool = None)-> tuple:
+def rsa_keygen(p: int, q: int, e: bool = None, d: bool = None, steps=False)-> tuple:
     """ RSA Keygeneration. Nimmt Primzahlen p und q und Schlüssel e und d. 
         Falls e und d nicht gegeben sind werden sie generiert.
     
@@ -1090,6 +1102,9 @@ def rsa_keygen(p: int, q: int, e: bool = None, d: bool = None)-> tuple:
     
     n = p*q
     n_phi = (p-1)*(q-1)
+    if steps:
+        display(Math(f'n\ =\ {p}*{q}\ |\ =\ {p*q}'))
+        display(Math(f'\Phi({str(n)})\ =\ {(p-1)}*{(q-1)}\ | =\ {(p-1)*(q-1)}'))
     
     if e is None:
         e = int(n_phi/4)
@@ -1097,16 +1112,19 @@ def rsa_keygen(p: int, q: int, e: bool = None, d: bool = None)-> tuple:
     if d is None:
         while euclid_ggt(n_phi, e) != 1:
             e-=1
-
-        d = euclid_ggt_extended(e, n_phi)[0]
-    
-    print(f"{'Primzahl p:':<15}{p:>20}")
-    print(f"{'Primzahl q:':<15}{q:>20}")
-    print(f"{'Produkt n:':<15}{n:>20}")
-    print(f"{'e. phi von n:':<15}{n_phi:>20}")
-    print()
-    print(f"{'priv. key d:':<15}{d:>20}")
-    print(f"{'oeff. key e:':<15}{e:>20}")
+        print()
+        if e > n_phi:
+            d = euclid_ggt_buergi(e, n_phi, steps)[1]
+        else:
+            d = euclid_ggt_buergi(n_phi, e, steps)[2]
+    if steps:
+        print(f"{'Primzahl p:':<15}{p:>20}")
+        print(f"{'Primzahl q:':<15}{q:>20}")
+        print(f"{'Produkt n:':<15}{n:>20}")
+        print(f"{'e. phi von n:':<15}{n_phi:>20}")
+        print()
+        print(f"{'priv. key d:':<15}{d:>20}")
+        print(f"{'oeff. key e:':<15}{e:>20}")
   
     return n, e, d
 
@@ -1177,7 +1195,7 @@ def disk_exp_func(a, b, m, log=False, steps=False):
         if count == m:
             display(Math("Antwort:\ es\ gibt\ keine\ Lösung"))
         else:
-            display(Math(f"Antwort:\ {a}\ =\ {b}^{count}\ mod\ {m}"))
+            display(Math(f"Antwort:\ {a}\ =\ {b}^{{{count}}}\ mod\ {m}"))
             display(Math(f"oder\ kurz:\ k\ =\ {count}"))
     if count == m:
         return None
@@ -1349,7 +1367,7 @@ def display_bayes():
     display(Math("Bayes\ Rule\ extended:\ P(A|B)\ =\ \\frac{P(B|A)*P(A)}{P(B|A)*P(A)+P(B|\\neg A)* P(\\neg A))}"))
 
 
-def derangements(n):
+def derangements(n, steps=False):
     """Implementierung von derangements
     
     Args:
@@ -1360,7 +1378,11 @@ def derangements(n):
     a = 0
     for i in range(n+1):
         a += (-1)**i*fac(n)/fac(i)
-
+        if steps:
+            if i != n:
+                display(Math(f"\\frac{{{f'(-1)^{{{i}}} * {n}!'}}}{{{f'{i}!'}}}\ + "))
+            else:
+                display(Math(f"\\frac{{{f'(-1)^{{{i}}} * {n}!'}}}{{{f'{i}!'}}}"))
     return a
 
 
