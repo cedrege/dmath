@@ -258,9 +258,9 @@ def erwartungswert(rmin, rmax, chance_success , intervall=1, steps = False):
     
     if steps:
         print("VERTEILUNGSFUNKTION:")
-        display(Math(f"Formel: \ \sum\limits_{{i = {rmin}}}^{{{rmax}}} \\biggl( \\begin{{matrix}} {rmax} \\\\ i \\end{{matrix}}  \\biggl) \cdot {erg[0]}^{{{rmax} - i}} \cdot {erg[1]}^{{{i}}} "))
-        tl = [[str(x) for x in range(rmax+1)], tmp_a, cumsum(tmp_a)]
-        print(DataFrame(tl, index=["Xi", "P(x = Xi)", "sum(P(x))"], columns=[str(" ") for x in range(rmax+1)]))
+        display(Math(f"Formel: \ \sum\limits_{{i = {rmin}}}^{{{rmax}}} \\biggl( \\begin{{matrix}} {rmax} \\\\ i \\end{{matrix}}  \\biggl) \cdot {erg[0]}^{{{rmax} - i}} \cdot {erg[1]}^{{i}} "))
+        tl = [[str(x) for x in range(rmin, rmax+1)], tmp_a, cumsum(tmp_a)]
+        print(DataFrame(tl, index=["Xi", "P(x = Xi)", "sum(P(x))"], columns=[str(" ") for x in range(rmin, rmax+1)]))
         print()
         print()
 
@@ -274,9 +274,9 @@ def erwartungswert(rmin, rmax, chance_success , intervall=1, steps = False):
     
     if steps:
         print("ERWARTUNGSWERT:")
-        display(Math(f"Formel: \ s =  \sum\limits_{{i = {rmin}}}^{{{rmax}}} i \cdot \\biggl( \\begin{{matrix}} {rmax} \\\\ i \\end{{matrix}}  \\biggl) \cdot {erg[0]}^{{{rmax} - i}} \cdot {erg[1]}^{{{i}}} "))
-        tl = [[str(x) for x in range(rmax+1)], tmp, cumsum(tmp)]
-        print(DataFrame(tl, index=["Xi", "P(x = Xi)", "sum(P(x))"], columns=[str(" ") for x in range(rmax+1)]))
+        display(Math(f"Formel: \ s =  \sum\limits_{{i = {rmin}}}^{{{rmax}}} i \cdot \\biggl( \\begin{{matrix}} {rmax} \\\\ i \\end{{matrix}}  \\biggl) \cdot {erg[0]}^{{{rmax} - i}} \cdot {erg[1]}^{{i}} "))
+        tl = [[str(x) for x in range(rmin, rmax+1)], tmp, cumsum(tmp)]
+        print(DataFrame(tl, index=["Xi", "P(x = Xi)", "sum(P(x))"], columns=[str(" ") for x in range(rmin, rmax+1)]))
         print()
         print()
 
@@ -289,9 +289,9 @@ def erwartungswert(rmin, rmax, chance_success , intervall=1, steps = False):
     
     if steps:
         print("VARIANZ:")
-        display(Math(f"Formel: \ v = \sum\limits_{{i = {rmin}}}^{{{rmax}}} (i - s)^2 \cdot \\biggl( \\begin{{matrix}} {rmax} \\\\ i \\end{{matrix}}  \\biggl) \cdot {erg[0]}^{{{rmax} - i}} \cdot {erg[1]}^{{{i}}} "))
-        tl = [[str(x) for x in range(rmax+1)], tmp_var, cumsum(tmp_var)]
-        print(DataFrame(tl, index=["Xi", "P(x = Xi)", "sum(P(x))"], columns=[str(" ") for x in range(rmax+1)]))
+        display(Math(f"Formel: \ v = \sum\limits_{{i = {rmin}}}^{{{rmax}}} (i - s)^2 \cdot \\biggl( \\begin{{matrix}} {rmax} \\\\ i \\end{{matrix}}  \\biggl) \cdot {erg[0]}^{{{rmax} - i}} \cdot {erg[1]}^{{i}} "))
+        tl = [[str(x) for x in range(rmin, rmax+1)], tmp_var, cumsum(tmp_var)]
+        print(DataFrame(tl, index=["Xi", "P(x = Xi)", "sum(P(x))"], columns=[str(" ") for x in range(rmin, rmax+1)]))
         print()
         print()
     
