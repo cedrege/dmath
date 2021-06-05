@@ -1413,26 +1413,27 @@ def uniq(input):
   return output
 
 
-def perf_savety(function: list, chance_messages: dict, chance_keys: dict):
+def perf_savety(function: list, chance_messages: dict, chance_keys: dict, latex_display=True):
     """implementierung für step by step Anleitung der Perfekten Sicherheit
     
     Args:
       function: Eine Liste die folgendermassen gefüllt wird: Key, message, cyper(welche bei der Verschlüsselung mit dem key und der Nachricht entsteht)
       chance_messages: ein Dictionary mit den Nachrichten in Verbindung mit der Wahrscheinlichkeit, dass diese auftritt
       chance_keys: ein Dictionary mit den Keys in Verbindung mit der Wahrscheinlichkeit, dass diese auftritt
-      steps: Wenn True, zeigt Schritte auf
+      latex_display: Wenn True, zeigt Schritte in latex an (führt zu schlechterer Perfomance)
       
     Returns:
-      a^b mod x wenn alg durchführbar
-      sonst: False"""
+      Alle Kalkulationen für die Perfekte Sicherheit"""
 
     function_len = len(chance_messages)*len(chance_keys)
     messages = []
     cypher_text = []
     keys = []
     for i in range(function_len):
-        display(Math(f'function({function[i*3]},\ {function[i*3+1]})\ =\ {function[i*3+2]}'))
-        #print(f"function ({function[i*3]}, {function[i*3+1]}) = {function[i*3+2]}")
+        if latex_display:
+            display(Math(f'function({function[i*3]},\ {function[i*3+1]})\ =\ {function[i*3+2]}'))
+        else:
+            print(f"function ({function[i*3]}, {function[i*3+1]}) = {function[i*3+2]}")
         keys.append(function[i*3])
         messages.append(function[i*3+1])
         cypher_text.append(function[i*3+2])
@@ -1449,16 +1450,22 @@ def perf_savety(function: list, chance_messages: dict, chance_keys: dict):
     for i in cypher_text_uniq:
         chance_for_cypher_text = 0
         for j in indices_cyper_text[i]:
-            display(Math(f"p({i} )\ ==\ {function[j-1]}"))
-            #print(f"p({i}) == {function[j-1]} ")
+            if latex_display:
+                display(Math(f"p({i} )\ ==\ {function[j-1]}"))
+            else:
+                print(f"p({i}) == {function[j-1]} ")
             current_message = function[j-1]
             current_key = function[j-2]
             current_key_chance = chance_keys[current_key]
-            display(Math(f'\\frac{{1}}{{{int(1/current_key_chance)}}}\ *\ \\frac{{1}}{{{int(1/chance_messages[current_message])}}}\ =\ \\frac{{1}}{{{int(1/(current_key_chance * chance_messages[current_message]))}}}'))
-            #print(f"{current_key_chance} * {chance_messages[current_message]}")
+            if latex_display:
+                display(Math(f'\\frac{{1}}{{{int(1/current_key_chance)}}}\ *\ \\frac{{1}}{{{int(1/chance_messages[current_message])}}}\ =\ \\frac{{1}}{{{int(1/(current_key_chance * chance_messages[current_message]))}}}'))
+            else:
+                print(f"{current_key_chance} * {chance_messages[current_message]}")
             chance_for_cypher_text += chance_messages[current_message]*current_key_chance
-        display(Math(f"chance\ for\ p({i})\ =\ {round(chance_for_cypher_text,15)}"))
-        #print(f"chance for p({i}) = {round(chance_for_cypher_text,15)}")
+        if latex_display:
+            display(Math(f"chance\ for\ p({i})\ =\ {round(chance_for_cypher_text,15)}"))
+        else:
+            print(f"chance for p({i}) = {round(chance_for_cypher_text,15)}")
         print()
         chances_cypher[i]=(round(chance_for_cypher_text, 15))
 
@@ -1467,17 +1474,22 @@ def perf_savety(function: list, chance_messages: dict, chance_keys: dict):
         indices = [i for i, x in enumerate(function) if x == j]
         indices_messages[j]= indices
  
-    #print("bayes rule")
     display(Math("Bayes\ Rule:\ P(A|B)\ =\ \\frac{P(B|A)*P(A)}{P(B)}"))
     display(Math("bei\ mehr\ als\ einer\ Chance,\ müssen\ sie\ addiert\ werden,\ bei\ keiner\ ist\ die\ Chance\ 0"))
     for current_message in indices_messages:
         for current_cypher in cypher_text_uniq:
-            display(Math(f"Cyper:{current_cypher}\ Nachricht:{current_message}"))
-            #print("current cypher", current_cypher)
-            #print("current message", current_message)
+            if latex_display:
+                display(Math(f"Cyper:{current_cypher}\ Nachricht:{current_message}"))
+            else:
+                print("current cypher", current_cypher)
+                print("current message", current_message)
             for i in range(len(chance_keys)):
                 if current_cypher == function[indices_messages[current_message][i]+1]:
-                    display(Math(f"{chance_messages[current_message]} * {chance_keys[function[indices_messages[current_message][i]-1]]}/{chances_cypher[current_cypher]}"))
-                    display(Math(f"Chance\ for\ ( {current_message} | {current_cypher} )\ =\ {chance_messages[current_message] * chance_keys[function[indices_messages[current_message][i]-1]] / chances_cypher[current_cypher]}"))
+                    if latex_display:
+                        display(Math(f"{chance_messages[current_message]} * {chance_keys[function[indices_messages[current_message][i]-1]]}/{chances_cypher[current_cypher]}"))
+                        display(Math(f"Chance\ for\ ( {current_message} | {current_cypher} )\ =\ {chance_messages[current_message] * chance_keys[function[indices_messages[current_message][i]-1]] / chances_cypher[current_cypher]}"))
+                    else:
+                        print(f"chance for ( {current_message} | {current_cypher} ) = {chance_messages[current_message] * chance_keys[function[indices_messages[current_message][i]-1]] / chances_cypher[current_cypher]}")
             print()
-                    #print(f"chance for ( {current_message} | {current_cypher} ) = {chance_messages[current_message] * chance_keys[function[indices_messages[current_message][i]-1]] / chances_cypher[current_cypher]}")
+                    
+                    
