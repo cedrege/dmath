@@ -1,30 +1,11 @@
 """
-#import numpy as np
 class dmath():
-    
-    @staticmethod
-    def binomialdist(n,k):
-        return np.math.factorial(n) / (np.math.factorial(k) * np.math.factorial(n - k))
-    #binomialverteilung
-    #mit zurücklegen
-    #k = anz. erfolge n = anz. ziehungen p = chance für erfolg
-    @staticmethod
-    def binomial(k,n,p):
-        return dmath.binomialdist(n,k) * p**k * (1-p)**(n-k)
-    
     #hypergeometrische verteilung
     #ohne zurücklegen
     #N = anz. möglichkeiten M = anz. guter möglichkeiten n = anz. ziehungen k = anz. erfolge
     @staticmethod
     def hypergeo(N,M,n,k):
         return dmath.binomialdist(M,k) * dmath.binomialdist(N - M, n - k) / dmath.binomialdist(N,n)
-    
-    #poisson verteilung
-    #abschätzung
-    #n = anz. möglichkeiten p = chance für erfolg k = anz. erfolge
-    @staticmethod
-    def poisson(n,p,k):
-        return (n*p)**k / np.math.factorial(k) * np.math.exp(-n*p) 
 """
 
 # Documentationstyleguide: https://google.github.io/styleguide/pyguide.html
@@ -69,7 +50,7 @@ def fac(n: int) -> int:
     return factorial(n)
 
 
-def binomial_coefficient(n: int, k: int) -> float:
+def binomial_coefficient(n: int, k: int, steps: bool = False) -> int:
     """ Berechnet den Binomialkoeffizienten zweier Zahlen.
         Die Paremeter wurden so implementiert, dass man n tief k lesen wuerde.
         Somit ergibt sich die Aussage: Man kann k verschiedene Objekte von der Menge n auswaehlen kann.
@@ -77,6 +58,7 @@ def binomial_coefficient(n: int, k: int) -> float:
     Args:
       n: Anzahl Moeglichkeiten
       k: Anzahl Erfolge
+      steps:          Zeigt die Schritte auf
 
     Raises:
       ValueError: Wenn dividend null ist
@@ -84,6 +66,9 @@ def binomial_coefficient(n: int, k: int) -> float:
     Returns:
       Binomialkoeffizient, berechnet aus den angegeben Parametern
     """
+    if steps:
+        display(Math(f"\\biggl( \\begin{{matrix}} {n} \\\\ {k} \\end{{matrix}} \\biggl) = \\frac{{{n}!}}{{{k}!\cdot({n-k})!}} = {comb(n,k)}"))
+
     return comb(n, k)
     #dividend = 1
     #divisor = 1
@@ -98,21 +83,26 @@ def binomial_coefficient(n: int, k: int) -> float:
     #return dividend / divisor
 
 
-def binomial_distribution(n: int, k: int, p: int) -> float:
+def binomial_distribution(n: int, k: int, p: float, steps: bool = False) -> float:
     """ Berechnet die Binomialverteilung anhand der angegeben Werte.
 
     Args: 
       n: Anzahl Moeglichkeiten
       k: Anzahl Erfolge
       p: Wahrscheinlichkeit auf Erfolg bei einem Versuch
+      steps:          Zeigt die Schritte auf
 
     Returns:
       Binomialverteilung, berechnet aus den angegeben Parametern
     """
+    if steps:
+        display(Math(f"\\biggl( \\begin{{matrix}} n \\\\ k \\end{{matrix}} \\biggl) \cdot p^k \cdot (1-p)^{{n-k}}"))
+        display(Math(f"\\biggl( \\begin{{matrix}} {n} \\\\ {k} \\end{{matrix}} \\biggl) \cdot {p}^{{{k}}} \cdot ({1-p})^{{{n-k}}} = {binomial_coefficient(n, k) * p**k * (1-p)**(n-k)}"))
+
     return binomial_coefficient(n, k) * p**k * (1-p)**(n-k)
 
 
-def cumsum_binomial_distribution(n: int, p: int, sum_range: tuple) -> float:
+def cumsum_binomial_distribution(n: int, p: float, sum_range: tuple, steps: bool = False) -> float:
     """ Berechnet die Binomialverteilung anhand der angegeben Werte.
         Die Wahrscheinlichkeiten werden in einem bestimmten Bereich gerechnet und zusammensummiert.
 
@@ -122,46 +112,61 @@ def cumsum_binomial_distribution(n: int, p: int, sum_range: tuple) -> float:
       sum_range: Bereich, indem die Wahrscheinlichkeiten zusammengerechnet werden.
                  Es wird automatisch +1 fuer die obere Grenze hinzugefuegt.
                  Manuelles hinzufügen wird in einem falschen Resultat resultieren.
+      steps:          Zeigt die Schritte auf
 
     Returns:
       Summierte Resultate der Binomialverteilung in einem bestimmten Bereich
     """
-    sum = 0
+    s = 0
     for i in range(sum_range[0], sum_range[1] + 1):
-        sum += binomial_distribution(n, i, p)
-    return sum
+        s += binomial_distribution(n, i, p)
+    
+    if steps:
+        display(Math(f"\sum\limits_{{i = {sum_range[0]}}}^{{{sum_range[1]}}} \\biggl( \\begin{{matrix}} {n} \\\\ i \\end{{matrix}}  \\biggl) = {s}"))
+
+    return s
 
 
-def poisson_distribution(my: int, k: int) -> float:
+def poisson_distribution(mu: float, k: int, steps: bool = False) -> float:
     """ Berechnet die Poisson Verteilung fuer my und k
     
     Args:
-      my: Anzahl Moeglichkeiten mal potenzielle Chance (n * p)
+      mu: Anzahl Moeglichkeiten mal potenzielle Chance (n * p)
       k: Anzahl Erfolge
+      steps:          Zeigt die Schritte auf
 
     Returns:
       Resultat der Poisson Verteilung fuer die angegeben Parameter
     """
-    return my**k/fac(k) * e**(-my)
+    if steps:
+        display(Math("\mu^{k/k!} \cdot e^{(-\mu)}"))
+        display(Math(f"{mu}^{{{f'{k/fac(k):.13f}'}}} \cdot e^{{{(-mu)}}} = {mu**k/fac(k) * e**(-mu)}"))
+
+    return mu**k/fac(k) * e**(-mu)
 
 
-def cumsum_poisson_distribution(my: int, sum_range: tuple) -> float:
+def cumsum_poisson_distribution(mu: float, sum_range: tuple, steps: bool = False) -> float:
     """ Berechnet die Poisson Verteilung fuer my und k.
         Die Wahrscheinlichkeiten werden in einem bestimmten Bereich gerechnet und zusammensummiert.
     
     Args:
-      my: Anzahl Moeglichkeiten mal potenzielle Chance (n * p)
+      mu: Anzahl Moeglichkeiten mal potenzielle Chance (n * p)
       sum_range: Bereich, indem die Wahrscheinlichkeiten zusammengerechnet werden.
                  Es wird automatisch +1 fuer die obere Grenze hinzugefuegt.
                  Manuelles hinzufügen wird in einem falschen Resultat resultieren.
+      steps:          Zeigt die Schritte auf
 
     Returns:
       Summierte Resultate der Poisson Verteilung ueber den angegeben Bereich
     """
-    sum = 0
+    s = 0
     for i in range(sum_range[0], sum_range[1] + 1):
-        sum += poisson_distribution(my, i)
-    return sum
+        s += poisson_distribution(mu, i)
+    
+    if steps:
+        display(Math(f"\sum\limits_{{i = {sum_range[0]}}}^{{{sum_range[1]}}} {mu}^{{i/i!}} \cdot e^{{(-{mu})}} = {s}"))
+
+    return s
 
 
 def generating_function(result, anz_vars, limits: list = None):
