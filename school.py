@@ -139,8 +139,8 @@ def poisson_distribution(mu: float, k: int, steps: bool = False) -> float:
       Resultat der Poisson Verteilung fuer die angegeben Parameter
     """
     if steps:
-        display(Math("\mu^{k/k!} \cdot e^{(-\mu)}"))
-        display(Math(f"{mu}^{{{f'{k/fac(k):.13f}'}}} \cdot e^{{{(-mu)}}} = {mu**k/fac(k) * e**(-mu)}"))
+        display(Math("\\frac{\mu^k}{k!} \cdot e^{(-\mu)}"))
+        display(Math(f"\\frac {{{mu}^{{{k}}}}}{{{k}!}} \cdot e^{{{(-mu)}}} = {mu**k/fac(k) * e**(-mu)}"))
 
     return mu**k/fac(k) * e**(-mu)
 
@@ -164,7 +164,7 @@ def cumsum_poisson_distribution(mu: float, sum_range: tuple, steps: bool = False
         s += poisson_distribution(mu, i)
     
     if steps:
-        display(Math(f"\sum\limits_{{i = {sum_range[0]}}}^{{{sum_range[1]}}} {mu}^{{i/i!}} \cdot e^{{(-{mu})}} = {s}"))
+        display(Math(f"\sum\limits_{{i = {sum_range[0]}}}^{{{sum_range[1]}}} \\frac{{{mu}^i}}{{i!}} \cdot e^{{(-{mu})}} = {s}"))
 
     return s
 
