@@ -251,6 +251,20 @@ def erwartungswert(rmin, rmax, chance_success , intervall=1, steps = False):
     """
     erg = (1 - chance_success, chance_success)
 
+    tmp_a = []
+    for i in range(rmin, rmax + 1, intervall):
+        val = comb(rmax, i) * erg[0]**(rmax / intervall - i) * erg[1]**(i / intervall)
+        tmp_a.append(val)
+    
+    if steps:
+        print("VERTEILUNGSFUNKTION:")
+        display(Math(f"Formel: \ \sum\limits_{{i = {rmin}}}^{{{rmax}}} \\biggl( \\begin{{matrix}} {rmax} \\\\ i \\end{{matrix}}  \\biggl) \cdot {erg[0]}^{{{rmax} - i}} \cdot {erg[1]}^{{{i}}} "))
+        tl = [[str(x) for x in range(rmax+1)], tmp_a, cumsum(tmp_a)]
+        print(DataFrame(tl, index=["Xi", "P(x = Xi)", "sum(P(x))"], columns=[str(" ") for x in range(rmax+1)]))
+        print()
+        print()
+
+
     tmp = []
     s = 0
     for i in range(rmin, rmax + 1, intervall):
@@ -259,7 +273,7 @@ def erwartungswert(rmin, rmax, chance_success , intervall=1, steps = False):
         s += val
     
     if steps:
-        print("ERWARTUNGSWEG:")
+        print("ERWARTUNGSWERT:")
         display(Math(f"Formel: \ s =  \sum\limits_{{i = {rmin}}}^{{{rmax}}} i \cdot \\biggl( \\begin{{matrix}} {rmax} \\\\ i \\end{{matrix}}  \\biggl) \cdot {erg[0]}^{{{rmax} - i}} \cdot {erg[1]}^{{{i}}} "))
         tl = [[str(x) for x in range(rmax+1)], tmp, cumsum(tmp)]
         print(DataFrame(tl, index=["Xi", "P(x = Xi)", "sum(P(x))"], columns=[str(" ") for x in range(rmax+1)]))
@@ -763,13 +777,13 @@ def sma(n, p, m, steps=False):
         display(Math(f'Q\ =\ hoch\ 2\ ;\ M\ =\ multiplizieren\ mit\ {n}'))
         display(Math(f'{n}^{{{a[:-1]}}}\ mod\ {m}'))
         display(Math(f'{b}'))
-        display(Math(f'{new%m}\ mod\ {m}'))
-    return new%m
+        display(Math(f'{new % m}\ mod\ {m}'))
+    return new % m
 
 
 @strict_types
 def check_primitive_element(p: int, s: int, steps=False) -> bool:
-    """ Diese Funktion ueberprueft ob der Integer s ein primitives Element
+    """ Diese Funktion ueberprueft, ob der Integer s ein primitives Element
         von der Primzahl p ist. Dies ist der Fall wenn s^i mod p (0 < i < p)
         alle Elemente in Z_p erzeugt.
 
@@ -1037,9 +1051,6 @@ def vigenere_chiffre(key_word: str, txt: str, decrypt_flag: bool = False, show_d
     return out
 
 
-    return new % m
-
-
 @strict_types
 def gen_prime(i:int)-> int:
     """ Primzahlengenerator. Liefert die erste Primzahl nach i oder i selber falls i
@@ -1102,7 +1113,6 @@ def rsa_keygen(p: int, q: int, e: bool = None, d: bool = None)-> tuple:
 
 @strict_types
 def rsa(n: int, k: int, m: int)-> int:
-    
     """ Diese Funktion Ver- oder Entschluesselt die Nachricht m mithilfe des Primzahlenprodukts n
         und des (oeffentlichen oder privaten) Schluessels.
     
@@ -1230,7 +1240,6 @@ def euler_theorem(a: int,b: int,x: int, steps=False, primsteps=False):
     Returns:
       a^b mod x wenn alg durchführbar
       sonst: False
-      
     """
     if b >= euler_phi(x) and euclid_ggt(a,x) == 1:
         if steps:
