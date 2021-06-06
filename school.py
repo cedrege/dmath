@@ -1418,6 +1418,8 @@ def perf_savety(function: list, chance_messages: dict, chance_keys: dict, latex_
     
     Args:
       function: Eine Liste die folgendermassen gefüllt wird: Key, message, cyper(welche bei der Verschlüsselung mit dem key und der Nachricht entsteht)
+        --> bsp: mit wenn die Nachricht a mit dem key1 mit B verschlüsselt wird, dann wird eingegeben ["k1", "a", "B"]
+            also in worten "k1 macht aus der Nachricht a den Cypher B" 
       chance_messages: ein Dictionary mit den Nachrichten in Verbindung mit der Wahrscheinlichkeit, dass diese auftritt
       chance_keys: ein Dictionary mit den Keys in Verbindung mit der Wahrscheinlichkeit, dass diese auftritt
       latex_display: Wenn True, zeigt Schritte in latex an (führt zu schlechterer Perfomance)
