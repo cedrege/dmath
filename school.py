@@ -1375,14 +1375,16 @@ def derangements(n, steps=False):
       
     Returns:
       anzahl der möglichen Derangements"""
+    text=""
     a = 0
     for i in range(n+1):
         a += (-1)**i*fac(n)/fac(i)
         if steps:
             if i != n:
-                display(Math(f"\\frac{{{f'(-1)^{{{i}}} * {n}!'}}}{{{f'{i}!'}}}\ + "))
+                text += f"\\frac{{{f'(-1)^{{{i}}} * {n}!'}}}{{{f'{i}!'}}}\ + "
             else:
-                display(Math(f"\\frac{{{f'(-1)^{{{i}}} * {n}!'}}}{{{f'{i}!'}}}"))
+                text += f"\\frac{{{f'(-1)^{{{i}}} * {n}!'}}}{{{f'{i}!'}}}"
+    display(Math(text))
     return a
 
 
