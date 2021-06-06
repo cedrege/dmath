@@ -1381,7 +1381,7 @@ def derangements(n, steps=False):
         a += (-1)**i*fac(n)/fac(i)
         if steps:
             if i != n:
-                text += f"\\frac{{{f'(-1)^{{{i}}} * {n}!'}}}{{{f'{i}!'}}}\ + "
+                text += f"\\frac{{{f'(-1)^{{{i}}} * {n}!'}}}{{{f'{i}!'}}}\ +\ "
             else:
                 text += f"\\frac{{{f'(-1)^{{{i}}} * {n}!'}}}{{{f'{i}!'}}}"
     display(Math(text))
