@@ -308,6 +308,28 @@ def erwartungswert(rmin, rmax, chance_success , intervall=1, steps = False):
     return {"Erwartungswert" : round(s, 13), "Varianz" : round(s_var, 13)}
 
 
+def erwartungswert_infinity(zaehler: int, nenner: int, steps= False) -> float:
+    """ Erwartungswert bei einer unendlichen Summe.
+
+    Args:
+      zaehler: Der Zaehler der W-keit (wenn als Bruch dargestellt)
+      nenner:  Der Nenner der W-keit (wenn als Bruch dargestellt)
+      steps:   Wenn True zeigt Steps an
+
+    Returns:
+      Erwartungswert bei einer unendlichen Summe.
+    """
+    p = zaehler / nenner
+    zaehler_x = nenner - zaehler
+    x = 1 - p
+
+    if steps:
+        display(Math(f"E(X) = \sum\limits_{{k=1}}^{{\infty}} k \cdot p \cdot (1-p)^{{(k-1)}} = p \cdot \sum\limits_{{k=0}}^{{\infty}} (k+1) \cdot (1-p)^k = p \cdot \\frac{{1}}{{(1 - (1-p))^2}}"))
+        display(Math(f"E(X) = \sum\limits_{{k=1}}^{{\infty}} k \cdot \\biggl( \\frac{{{zaehler}}}{{{nenner}}} \\biggl) \cdot \\biggl( \\frac{{{zaehler_x}}}{{{nenner}}} \\biggl)^{{(k-1)}} = \\frac{{{zaehler}}}{{{nenner}}} \cdot \sum\limits_{{k=0}}^{{\infty}} (k+1) \cdot \\biggl( \\frac{{{zaehler_x}}}{{{nenner}}} \\biggl)^k = \\frac{{{zaehler}}}{{{nenner}}} \cdot \\frac{{1}}{{(1 - \\frac{{{zaehler_x}}}{{{nenner}}})^2}} = {round(p * (1 / (1 - x)**2), 13)}"))
+
+    return round(p * (1 / (1 - x)**2), 13)
+
+
 def prime_facs(n: int, steps=False) -> list:
     """ Berechnet die Primfaktorzerlegung und zeigt die Schritte auf
 
