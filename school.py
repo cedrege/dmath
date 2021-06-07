@@ -1364,8 +1364,8 @@ def page_rank(connection_matrix: ndarray, dampening_factor_zaehler: float, dampe
         display(Math(f"\\vec{{b}} = \\frac{{{dampening_factor_nenner - dampening_factor_zaehler}}}{{{dampening_factor_nenner}}} \cdot \\begin{{bmatrix}} {b_dis_str} \\end{{bmatrix}}"))
 
         # Print calc way:
-        display(Math(f"I \cdot \\vec{{r}} = (\\frac{{{dampening_factor_zaehler}}}{{{dampening_factor_nenner}}} \cdot A) \cdot \\vec{{r}} + \\frac{{{dampening_factor_zaehler}}}{{{dampening_factor_nenner}}} \cdot \\vec{{b}}"))
-        display(Math(f"(I -(\\frac{{{dampening_factor_zaehler}}}{{{dampening_factor_nenner}}} \cdot A)) \cdot \\vec{{r}} = \\frac{{{dampening_factor_zaehler}}}{{{dampening_factor_nenner}}} \cdot \\vec{{b}}"))
+        display(Math(f"I \cdot \\vec{{r}} = (\\frac{{{dampening_factor_zaehler}}}{{{dampening_factor_nenner}}} \cdot A) \cdot \\vec{{r}} + \\frac{{{dampening_factor_nenner - dampening_factor_zaehler}}}{{{dampening_factor_nenner}}} \cdot \\vec{{b}}"))
+        display(Math(f"(I -(\\frac{{{dampening_factor_zaehler}}}{{{dampening_factor_nenner}}} \cdot A)) \cdot \\vec{{r}} = \\frac{{{dampening_factor_nenner - dampening_factor_zaehler}}}{{{dampening_factor_nenner}}} \cdot \\vec{{b}}"))
         display(Math(f"\\underbrace{{{dampening_factor_nenner}(I - (\\frac{{{dampening_factor_zaehler}}}{{{dampening_factor_nenner}}} \cdot A))}}_{{\\tilde{{A}}}} \cdot \\vec{{r}} = \\vec{{b}}"))
         display(Math(f"\\vec{{r}} = \\tilde{{A}}^{{-1}} \cdot \\vec{{b}}"))
 
