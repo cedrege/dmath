@@ -1,13 +1,3 @@
-"""
-class dmath():
-    #hypergeometrische verteilung
-    #ohne zurücklegen
-    #N = anz. möglichkeiten M = anz. guter möglichkeiten n = anz. ziehungen k = anz. erfolge
-    @staticmethod
-    def hypergeo(N,M,n,k):
-        return dmath.binomialdist(M,k) * dmath.binomialdist(N - M, n - k) / dmath.binomialdist(N,n)
-"""
-
 # Documentationstyleguide: https://google.github.io/styleguide/pyguide.html
 from pandas import DataFrame
 from numpy import cumsum, e, ndarray, array as np_array_const, reciprocal, identity as identity_matrix
@@ -125,6 +115,26 @@ def cumsum_binomial_distribution(n: int, p: float, sum_range: tuple, steps: bool
         display(Math(f"\sum\limits_{{i = {sum_range[0]}}}^{{{sum_range[1]}}} \\biggl( \\begin{{matrix}} {n} \\\\ i \\end{{matrix}}  \\biggl) = {s}"))
 
     return s
+
+
+def hypergeometric_distribution(N:int, M: int, n: int, k: int, steps: bool = False) -> int:
+    """ Berechnet die Hypergeometrische Verteilung anhand der angegeben Werte.
+
+    Args:
+      N: Anzahl aller Objekte
+      M: Anzahl korrekter, moeglicher Ziehungen
+      n: Anzahl Ziehungen
+      k: Anzahl erwarteter Erfolge
+      steps:          Zeigt die Schritte auf
+
+    Returns:
+      Hypergeometrische Verteilung, berechnet aus den angegeben Parametern
+    """
+    if steps:
+        display(Math(f"P(k) = \\frac{{\\biggl( \\begin{{matrix}} M \\\\ k \\end{{matrix}} \\biggl) \cdot \\biggl( \\begin{{matrix}} N-M \\\\ n-k \\end{{matrix}} \\biggl)}}{{\\biggl( \\begin{{matrix}} N \\\\ n \\end{{matrix}} \\biggl)}}"))
+        display(Math(f"P(k) = \\frac{{\\biggl( \\begin{{matrix}} {M} \\\\ {k} \\end{{matrix}} \\biggl) \cdot \\biggl( \\begin{{matrix}} {N-M} \\\\ {n-k} \\end{{matrix}} \\biggl)}}{{\\biggl( \\begin{{matrix}} {N} \\\\ {n} \\end{{matrix}} \\biggl)}}"))
+
+    return binomial_coefficient(M, k) * binomial_coefficient(N - M, n - k) / binomial_coefficient(N, n)
 
 
 def poisson_distribution(mu: float, k: int, steps: bool = False) -> float:
@@ -829,7 +839,7 @@ def check_primitive_element(p: int, s: int, steps=False) -> bool:
     for n in range(1, p):
 
         if steps:
-            display(Math(f'{sequence[-1]} \cdot {s} \;\bmod\; {p} = {sequence[-1] * s % p}'))
+            display(Math(f'{sequence[-1]} \cdot {s} \;\\bmod\; {p} = {sequence[-1] * s % p}'))
 
         sequence.append(sequence[-1] * s % p)
 
@@ -911,12 +921,12 @@ def diffie_hellman(p: int, s: int, a: int, b: int, steps=False) -> tuple:
         display(Math(f'p = {p}, s = {s}, a = {a}, b = {b}'))
         print()
         display(Math('\mathrm{Alpha:}'))
-        display(Math('\\alpha = s^{a} \;\bmod\; p'))
-        display(Math(f'{alpha} = {s}^{{{a}}} \;\bmod\; {p}'))
+        display(Math('\\alpha = s^{a} \;\\bmod\; p'))
+        display(Math(f'{alpha} = {s}^{{{a}}} \;\\bmod\; {p}'))
         print()
         display(Math('\mathrm{Beta:}'))
-        display(Math('\\beta = s^{b} \;\bmod\; p'))
-        display(Math(f'{beta} = {s}^{{{b}}} \;\bmod\; {p}'))
+        display(Math('\\beta = s^{b} \;\\bmod\; p'))
+        display(Math(f'{beta} = {s}^{{{b}}} \;\\bmod\; {p}'))
         print()
         display(Math('\mathrm{Key:}'))
         display(Math('\mathcal{K} = \\alpha^{b} = \\beta^{a} = (s^{a})^{b}'))
@@ -1376,15 +1386,26 @@ def derangements(n, steps=False):
     Returns:
       anzahl der möglichen Derangements"""
     text=""
+    text_refined=""
     a = 0
     for i in range(n+1):
         a += (-1)**i*fac(n)/fac(i)
         if steps:
             if i != n:
                 text += f"\\frac{{{f'(-1)^{{{i}}} * {n}!'}}}{{{f'{i}!'}}}\ +\ "
+                
             else:
                 text += f"\\frac{{{f'(-1)^{{{i}}} * {n}!'}}}{{{f'{i}!'}}}"
-    display(Math(text))
+            if i == 0:
+                text_refined += f"\\frac{{{fac(n)}}}{{{fac(i)}}}\ "
+            else:
+                if i%2 == 0:
+                    text_refined += f"+\ \\frac{{{fac(n)}}}{{{fac(i)}}}\ "
+                else:
+                    text_refined += f"-\ \\frac{{{fac(n)}}}{{{fac(i)}}}\ "
+    if steps:
+        display(Math(text))
+        display(Math(text_refined))
     return a
 
 
