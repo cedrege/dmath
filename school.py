@@ -690,7 +690,7 @@ def small_fermat(a: int,b: int,x: int, steps=False):
         return False
 
 
-def euler_prime(x: int, y=0):
+def euler_prime(x: int, y=0, steps=False):
     """Berechnung, wieviele Primzahlen in einem Bereich anzutreffen sind
     
     Args:
@@ -700,17 +700,19 @@ def euler_prime(x: int, y=0):
       erwartete Primzahlen in bereich zwischen x und y
       
     """
-    display(Math('Formel\ für\ ungefähre\ Bestimmung:\ \\frac{x}{ln(x)}\ -\ \\frac{y}{ln(y)}'))
-    if y !=0:
-        result = x/(log(x)) - y/(log(y))
-        if str(result).count("e") > 0:
-            str_1 = str(result).split("+")
-            str_1[1] = f"{{{str_1[1]}}}"
-            display(Math("^".join(str_1)))
+    if steps:
+        display(Math('Formel\ für\ ungefähre\ Bestimmung:\ \\frac{x}{ln(x)}\ -\ \\frac{y}{ln(y)}'))
+        if y !=0:
+            result = x/(log(x)) - y/(log(y))
+            if str(result).count("e") > 0:
+                str_1 = str(result).split("+")
+                str_1[1] = f"{{{str_1[1]}}}"
+                display(Math("^".join(str_1)))
+            else:
+                display(Math(str(result)))
         else:
-            display(Math(str(result)))
-    else:
-        display(Math(f"{{{x/log(x)}}}"))
+            display(Math(f"{{{x/log(x)}}}"))
+    return x/(log(x)) - y/(log(y))
 
 
 def bayes(fpr, fnr, verb, steps = False): #oder 1-spezifität, 1-sensitivität, verb
