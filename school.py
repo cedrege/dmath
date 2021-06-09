@@ -828,7 +828,7 @@ def sma(n, p, m, steps=False):
     return new % m
 
 
-@strict_types
+#@strict_types
 def check_primitive_element(p: int, s: int, steps=False) -> bool:
     """ Diese Funktion ueberprueft, ob der Integer s ein primitives Element
         von der Primzahl p ist. Dies ist der Fall wenn s^i mod p (0 < i < p)
@@ -875,7 +875,7 @@ def check_primitive_element(p: int, s: int, steps=False) -> bool:
         return False
 
 
-@strict_types
+#@strict_types
 def get_primitive_elements(p: int) -> list:
     """ Diese Funktion berechnet mithilfe der Funktion "check_primitive_element"
         eine Liste der primitiven Elemente von "p".
@@ -902,7 +902,7 @@ def get_primitive_elements(p: int) -> list:
     return out
 
 
-@strict_types
+#@strict_types
 def diffie_hellman(p: int, s: int, a: int, b: int, steps=False) -> tuple:
     """ Implementation der Diffie-Hellman Verschluesselung. Beteiligt sind die
         zwei Parteien A und B, welche sich gegenseitig verschluesselte
@@ -959,7 +959,7 @@ def diffie_hellman(p: int, s: int, a: int, b: int, steps=False) -> tuple:
     return (alpha, beta, key_A)
 
 
-@strict_types
+#@strict_types
 def caesar_chiffre(key: int, txt: str, decrypt_flag: bool = False, show_details: bool = False) -> str:
     """ Caesar chiffre. Der gegebene Text wird mithilfe einer Zahl verschlüsselt.
         Dazu wird jeder Buchstabe im Text ersetzt, mit dem Buchstaben der um die
@@ -992,7 +992,7 @@ def caesar_chiffre(key: int, txt: str, decrypt_flag: bool = False, show_details:
     return out
 
 
-@strict_types
+#@strict_types
 def key_word_chiffre(key_word: str, key_chr: str, txt: str, decrypt_flag: bool = False,
                      show_details: bool = False) -> str:
     """ Schluesselwortchiffre. Erstellt mithilfe eines Schluesselworts und eines
@@ -1054,7 +1054,7 @@ def key_word_chiffre(key_word: str, key_chr: str, txt: str, decrypt_flag: bool =
     return out
 
 
-@strict_types
+#@strict_types
 def vigenere_chiffre(key_word: str, txt: str, decrypt_flag: bool = False, show_details=False) -> str:
     """ Vignere chiffre. Der gegebene Text wird mithilfe eines Wortes verschlüsselt.
         Dazu wird das Schlüsselwort mehrfach unter den Text geschrieben. Jeder Buch-
@@ -1098,7 +1098,7 @@ def vigenere_chiffre(key_word: str, txt: str, decrypt_flag: bool = False, show_d
     return out
 
 
-@strict_types
+#@strict_types
 def gen_prime(i:int)-> int:
     """ Primzahlengenerator. Liefert die erste Primzahl nach i oder i selber falls i
         eine Primzahl ist.
