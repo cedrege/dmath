@@ -1163,7 +1163,7 @@ def rsa_keygen(p: int, q: int, e: bool = None, d: bool = None, steps=False)-> tu
     return n, e, d
 
 
-@strict_types
+#@strict_types
 def rsa(n: int, k: int, m: int)-> int:
     """ Diese Funktion Ver- oder Entschluesselt die Nachricht m mithilfe des Primzahlenprodukts n
         und des (oeffentlichen oder privaten) Schluessels.
