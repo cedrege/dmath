@@ -1137,8 +1137,8 @@ def rsa_keygen(p: int, q: int, e: bool = None, d: bool = None, steps=False)-> tu
     n = p*q
     n_phi = (p-1)*(q-1)
     if steps:
-        display(Math(f'n\ =\ {p}*{q}\ |\ =\ {p*q}'))
-        display(Math(f'\Phi({str(n)})\ =\ {(p-1)}*{(q-1)}\ | =\ {(p-1)*(q-1)}'))
+        display(Math(f'n\ =\ {p}*{q}\ =\ {p*q}'))
+        display(Math(f'\Phi({str(n)})\ =\ {(p-1)}*{(q-1)}\ =\ {(p-1)*(q-1)}'))
     
     if e is None:
         e = int(n_phi/4)
@@ -1164,7 +1164,7 @@ def rsa_keygen(p: int, q: int, e: bool = None, d: bool = None, steps=False)-> tu
 
 
 #@strict_types
-def rsa(n: int, k: int, m: int)-> int:
+def rsa(n: int, k: int, m: int, steps=True)-> int:
     """ Diese Funktion Ver- oder Entschluesselt die Nachricht m mithilfe des Primzahlenprodukts n
         und des (oeffentlichen oder privaten) Schluessels.
     
@@ -1182,6 +1182,9 @@ def rsa(n: int, k: int, m: int)-> int:
     
     if n <= m:
         raise ValueError(f'm has to be smaller than n! ({m} !< {n})')
+
+    if steps:
+        display(Math(f'{m}^{{{k}}}\ mod\ {n}\ =\ {(m**k) % n}'))
         
     return (m**k) % n
 
