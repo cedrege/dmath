@@ -87,7 +87,7 @@ def binomial_distribution(n: int, k: int, p: float, steps: bool = False) -> floa
     """
     if steps:
         display(Math(f"\\biggl( \\begin{{matrix}} n \\\\ k \\end{{matrix}} \\biggl) \cdot p^k \cdot (1-p)^{{n-k}}"))
-        display(Math(f"\\biggl( \\begin{{matrix}} {n} \\\\ {k} \\end{{matrix}} \\biggl) \cdot {p}^{{{k}}} \cdot ({1-p})^{{{n-k}}} = {binomial_coefficient(n, k) * p**k * (1-p)**(n-k)}"))
+        display(Math(f"\\biggl( \\begin{{matrix}} {n} \\\\ {k} \\end{{matrix}} \\biggl) \cdot {p}^{{{k}}} \cdot {1-p}^{{{n-k}}} = {binomial_coefficient(n, k) * p**k * (1-p)**(n-k)}"))
 
     return binomial_coefficient(n, k) * p**k * (1-p)**(n-k)
 
@@ -112,7 +112,7 @@ def cumsum_binomial_distribution(n: int, p: float, sum_range: tuple, steps: bool
         s += binomial_distribution(n, i, p)
     
     if steps:
-        display(Math(f"\sum\limits_{{i = {sum_range[0]}}}^{{{sum_range[1]}}} \\biggl( \\begin{{matrix}} {n} \\\\ i \\end{{matrix}}  \\biggl) = {s}"))
+        display(Math(f"\sum\limits_{{i = {sum_range[0]}}}^{{{sum_range[1]}}} \\biggl( \\begin{{matrix}} {n} \\\\ i \\end{{matrix}}  \\biggl) \cdot {p}^{{i}} \cdot {1-p}^{{{n}-i}} = {s}"))
 
     return s
 
@@ -351,6 +351,27 @@ def prime_facs(n: int, steps=False) -> list:
             i=i-1
         i+=1  
     return list_of_factors
+
+
+def prime_fac_eu_phi(n, steps=False):
+    """ Berechnet die Primfaktorzerlegung anhad der eulerischen Phi Funktion
+
+    Args:
+       n:     Produkt von zwei Primzahlen p und q
+       steps: Zeigt Schritte auf
+    """
+    eu_phi = euler_phi(n)
+    q = Symbol("q")
+    _e = Eq(n - ((n/q)+q)+1, eu_phi)
+
+    solved = solve(_e)
+
+    if steps:
+        display(Math(f"{eu_phi} = {n} - \\biggl( \\frac{{{n}}}{{q}} + q \\biggl) +1 \ \\Rightarrow \ q^2 +{eu_phi - n if eu_phi - n >= 0 else f'({eu_phi - n})'} \cdot q + {n} = 0"))
+        display(Math("Solve \ for \ q"))
+        display(Math(f"q = {solved[0]}, \ p = {solved[1]}"))
+
+    return solved
 
 
 def euclid_ggt_print(a, b, steps = False, calc = 1):
