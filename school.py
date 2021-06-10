@@ -1,6 +1,6 @@
 # Documentationstyleguide: https://google.github.io/styleguide/pyguide.html
 from pandas import DataFrame
-from numpy import cumsum, e, ndarray, array as np_array_const, reciprocal, identity as identity_matrix
+from numpy import cumsum, e, ndarray, array as np_array_const, identity as identity_matrix
 from numpy.linalg import matrix_rank, inv as matrix_inverse, det as matrix_det
 from IPython.display import display, Math
 from functools import reduce
@@ -367,7 +367,7 @@ def prime_fac_eu_phi(n, steps=False):
     solved = solve(_e)
 
     if steps:
-        display(Math(f"{eu_phi} = {n} - \\biggl( \\frac{{{n}}}{{q}} + q \\biggl) +1 \ \\Rightarrow \ q^2 +{eu_phi - n if eu_phi - n >= 0 else f'({eu_phi - n})'} \cdot q + {n} = 0"))
+        display(Math(f"{eu_phi} = {n} - \\biggl( \\frac{{{n}}}{{q}} + q \\biggl) +1 \ \\Rightarrow \ q^2 +{eu_phi - n if eu_phi - n >= 0 else f'({eu_phi - n - 1})'} \cdot q + {n} = 0"))
         display(Math("Solve \ for \ q"))
         display(Math(f"q = {solved[0]}, \ p = {solved[1]}"))
 
