@@ -6,7 +6,7 @@ from IPython.display import display, Math
 from functools import reduce
 from math import log, comb, factorial
 from typing import get_type_hints
-from sympy import Symbol, Poly
+from sympy import Symbol, Poly, solve, Eq
 
 def strict_types(function):
     def type_checker(*args, **kwargs):
