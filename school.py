@@ -1,6 +1,6 @@
 # Documentationstyleguide: https://google.github.io/styleguide/pyguide.html
 from pandas import DataFrame
-from numpy import cumsum, e, ndarray, array as np_array_const, identity as identity_matrix
+from numpy import cumsum, e, ndarray, array as np_array_const, identity as identity_matrix, zeros as zero_matrix
 from numpy.linalg import matrix_rank, inv as matrix_inverse, det as matrix_det
 from IPython.display import display, Math
 from functools import reduce
@@ -1567,5 +1567,74 @@ def perf_savety(function: list, chance_messages: dict, chance_keys: dict, latex_
                     else:
                         print(f"chance for ( {current_message} | {current_cypher} ) = {chance_messages[current_message] * chance_keys[function[indices_messages[current_message][i]-1]] / chances_cypher[current_cypher]}")
             print()
+
+
+def get_graph_arrays(vert: dict):
+    
+    """ Diese Funktion berechnet die Adjazenzmatrix, Gradmatrix und Admittanzmatrix.
+
+    Args:
+      vert: Dictionary mit keys=Vertex, values=tuple der ausgehenden Kanten.
+      v_type = Datentyp der Werte des Dictionarys (int oder str)
+      
+    Raises: 
+    TypeError: Falls v_type != 'int' or 'str'.
+    TypeError: Falls nicht alle Keys & Values den selben type haben.
+
+    Returns:
+      Adjazenzmatrix, Gradmatrix und Admittanzmatrix als string.
+    """
+    
+    v_type = type(list(vert.keys())[0])
+    
+    if v_type not in (int, str):
+        raise TypeError(f"{v_type} is not a valid vertex_type! Has to be 'int 'or 'str'.")
+                         
+    for v, v_l in vert.items():
+        if type(v) != v_type:
+            raise TypeError(f"Type of key '{v}' ({type(v)}) does not match the other values. All keys and values have to be of the same type (int or str))")
+        for v_a in v_l:
+            if type(v_a) != v_type:
+                raise TypeError(f"Type of value '{v_a}' ({type(v_a)}) does not match the other values. All keys and values have to be of the same type (int or str))")
                     
-                    
+   
+    size = len(vert.keys())
+
+    adj = zero_matrix((size, size), dtype='int')
+    grd = zero_matrix((size, size), dtype='int')
+    adm = zero_matrix((size, size), dtype='int')
+
+    # adj
+    for v, v_l in vert.items():      
+        for v_a in v_l:
+            
+            if type(v_a) == int:
+                i = v-1
+                j = v_a-1
+                
+            if type(v_a) == str:
+                i = ord(v.lower())-97
+                j = ord(v_a.lower())-97
+
+            adj[i][j] = 1
+     
+    # grd
+    for row in range(size):
+        for e in adj[row]:
+            if e == 1:
+                grd[row][row] += 1
+
+    # adm
+    adm = grd - adj
+
+    # print
+    for name, arr in (('Adjazenzmatrix', adj), ('Gradmatrix', grd), ('Admittanzmatrix', adm)):
+        print(name)
+        for row in range(size):
+            for col in range(size):
+                print(arr[row][col], end=' ')
+            print()   
+        print()
+    
+    return
+
