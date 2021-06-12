@@ -829,11 +829,10 @@ def bayes_dmath(n: int, party1: dict, party2: dict, error_subscript: str, steps=
         v_2 = v 
     
     # Normalisieren anhand von n
-    chance_p1 = v_1[0] / n
-    chance_p2 = v_2[0] / n
-    chance_error_p1 = v_1[1] / v_1[0]
-    chance_error_p2 = v_2[1] / v_2[0]
-
+    chance_p1 = round(v_1[0] / n, 13)
+    chance_p2 = round(v_2[0] / n, 13)
+    chance_error_p1 = round(v_1[1] / v_1[0], 13)
+    chance_error_p2 = round(v_2[1] / v_2[0], 13)
 
     fpr = chance_error_p2
     fpr_frac = f"\\frac{{{round(v_2[1], 13)}}}{{{round(v_2[0], 13)}}}" 
@@ -844,30 +843,30 @@ def bayes_dmath(n: int, party1: dict, party2: dict, error_subscript: str, steps=
     spezifitaet = 1-fpr
     spez_frac = f"\\frac{{{round(v_2[0] - v_2[1], 13)}}}{{{round(v_2[0], 13)}}}"
 
+    bayes_pos= round(sensitivity * chance_p1 / (sensitivity * chance_p1 + fpr * (1-chance_p1)), 13)
+    bayes_neg = round(spezifitaet * (1-chance_p1) / (spezifitaet * (1-chance_p1) + fnr * chance_p1), 13)
+    abs_pos = round(chance_p1 * sensitivity + (1-chance_p1) * fpr, 13)
+    abs_neg = round(chance_p1 * fnr + (1-chance_p1) * spezifitaet,13)
 
     if steps:
         display(Math("Bayes\ Rule:\ P(A|B)\ =\ \\frac{P(B|A)*P(A)}{P(B)}"))
+        print()
+        display(Math(f"P({k_1}|{error_subscript})\ =>\ \\frac{{{f'{sens_frac} * {chance_p1}'}}}{{{f'{sens_frac} * {(chance_p1)} + {fpr_frac} * {round(1 - chance_p1, 13)}'}}}\ =\ {bayes_pos}"))
+        display(Math(f"P({k_2}|{error_subscript})\ =>\ 1-{bayes_pos}\ =\ {round(1 - bayes_pos, 13)}"))
+        print()
+        display(Math(f"P({k_2}|\\neg {error_subscript})\ =>\ \\frac{{{f'{spez_frac} * {round(1 - chance_p1, 13)}'}}}{{{f'{spez_frac} * {(round(1 - chance_p1, 13))} + {fnr_frac} * {chance_p1}'}}}\ =\ {bayes_neg}"))
+        display(Math(f"P({k_1}|\\neg {error_subscript})\ =>\ 1-{bayes_neg}\ =\ {round(1 - bayes_neg, 13)}"))
+        print()
+        display(Math(f"P({error_subscript})\ =>\ {chance_p1}*{sens_frac}+{round(1 - chance_p1, 13)}*{fpr_frac}\ =\ {abs_pos}"))
+        display(Math(f"P(\\neg {error_subscript})\ =>\ {chance_p1}*{fnr_frac}+{round(1 - chance_p1, 13)}*{spez_frac}\ =\ {abs_neg}"))
 
-    if steps:
-        display(Math(f"P({k_1}|{error_subscript})\ =>\ \\frac{{{f'{sens_frac} * {chance_p1}'}}}{{{f'{sens_frac} * {(chance_p1)} + {fpr_frac} * {1-chance_p1}'}}}\ =\ {round(sensitivity * chance_p1 / (sensitivity * chance_p1 + fpr * (1-chance_p1)),13)}"))
-        display(Math(f"P({k_2}|{error_subscript})\ =>\ 1-{round(sensitivity * chance_p1 / (sensitivity * chance_p1 + fpr * (1-chance_p1)), 13)}\ =\ {round(1 - (sensitivity * chance_p1 / (sensitivity * chance_p1 + fpr * (1-chance_p1))),13)}"))
-        display(Math(f"P({k_2}|\\neg {error_subscript})\ =>\ \\frac{{{f'{spez_frac} * {1-chance_p1}'}}}{{{f'{spez_frac} * {(1-chance_p1)} + {fnr_frac} * {chance_p1}'}}}\ =\ {round(spezifitaet * (1-chance_p1) / (spezifitaet * (1-chance_p1) + fnr * chance_p1),13)}"))
-        display(Math(f"P({k_1}|\\neg {error_subscript})\ =>\ 1-{round(spezifitaet * (1-chance_p1) / (spezifitaet * (1-chance_p1) + fnr * chance_p1), 13)}\ =\ {round(1- (spezifitaet * (1-chance_p1) / (spezifitaet * (1-chance_p1) + fnr * chance_p1)), 13)}"))
-
-        display(Math(f"P({error_subscript})\ =>\ {chance_p1}*{sens_frac}+{1-chance_p1}*{fpr_frac}\ =\ {round(chance_p1 * sensitivity + (1-chance_p1) * fpr, 13)} "))
-        display(Math(f"P(\\neg {error_subscript})\ =>\ {chance_p1}*{fnr_frac}+{1-chance_p1}*{spez_frac}\ =\ {round(chance_p1 * fnr + (1-chance_p1) * spezifitaet,13)} "))
-
-
-    bayes_pos = sensitivity * chance_p1 / (sensitivity * chance_p1 + fpr * (1-chance_p1))
-    bayes_neg = spezifitaet * (1-chance_p1) / (spezifitaet * (1-chance_p1) + fnr * chance_p1)
-    abs_pos = chance_p1 * sensitivity + (1-chance_p1) * fpr
-    abs_neg = chance_p1 * fnr + (1-chance_p1) * spezifitaet
-    print("chance nach pos. test wenn wirklich pos:", bayes_pos)
-    print("chance nach neg. test wenn wirklich neg.:", bayes_neg)
-    print("chance nach pos. test wenn NICHT pos:", 1-bayes_pos)
-    print("chance nach neg. test wenn NICHT neg.:", 1-bayes_neg)
-    print("abs. wahrscheinlichkeit für pos. Ereignis:", abs_pos)
-    print("abs. wahrscheinlichkeit für neg. Ereignis:", abs_neg)
+    if not steps:
+        print("chance nach pos. test wenn wirklich pos:", bayes_pos)
+        print("chance nach neg. test wenn wirklich neg.:", bayes_neg)
+        print("chance nach pos. test wenn NICHT pos:", 1-bayes_pos)
+        print("chance nach neg. test wenn NICHT neg.:", 1-bayes_neg)
+        print("abs. wahrscheinlichkeit für pos. Ereignis:", abs_pos)
+        print("abs. wahrscheinlichkeit für neg. Ereignis:", abs_neg)
 
 
 def sma(n, p, m, steps=False):
