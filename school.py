@@ -367,6 +367,8 @@ def prime_fac_eu_phi(n, steps=False):
     solved = solve(_e)
 
     if steps:
+        display(Math(f'n = p*q\ \\Rightarrow\  p = \\frac{{n}}{{q}}'))
+        display(Math(f'\Phi(n)\ =\ \Phi(p*q)\ =\ (p-1) * (q-1)\ =\ pq - (p + q) + 1\ =\ n - (p + q) + 1\ =\ n - (\\frac{{n}}{{q}} + q) + 1'))
         display(Math(f"{eu_phi} = {n} - \\biggl( \\frac{{{n}}}{{q}} + q \\biggl) +1 \ \\Rightarrow \ q^2 +{eu_phi - n if eu_phi - n >= 0 else f'({eu_phi - n - 1})'} \cdot q + {n} = 0"))
         display(Math("Solve \ for \ q"))
         display(Math(f"q = {solved[0]}, \ p = {solved[1]}"))
@@ -803,7 +805,17 @@ def bayes(fpr, fnr, verb, steps = False): #oder 1-spezifität, 1-sensitivität, 
     print("abs. wahrscheinlichkeit für neg. Ereignis:", abs_neg)
 
 
-def bayes_dmath(n, party1, party2, error_subscript, steps=False):
+def bayes_dmath(n: int, party1: dict, party2: dict, error_subscript: str, steps=False):
+    """Implementierung von Bayes rule mit angpassbaren Namen. Ausgelegt für Dmath
+    
+    Args:
+      n: anzahl der Testobjekte
+      party1: dictionary mit Namen der ersten Party und einem tupel für (Anzahl der Elemente von Party 1, Anzahl defekte der Party 1)
+      party1: dictionary mit Namen der zweiten Party und einem tupel für (Anzahl der Elemente von Party 2, Anzahl defekte der Party 2)
+      error_subscript: bezeichnung für den Error bzw, bedinte Wahrscheinlichkeit
+      
+    Returns:
+      alle möglichen chancen nach erfolgtem Test"""
     k_1 = None
     v_1 = None
     for k, v in party1.items():
