@@ -367,6 +367,8 @@ def prime_fac_eu_phi(n, steps=False):
     solved = solve(_e)
 
     if steps:
+        display(Math(f'n = p*q\ \\Rightarrow\  p = \\frac{{n}}{{q}}'))
+        display(Math(f'\Phi(n)\ =\ \Phi(p*q)\ =\ (p-1) * (q-1)\ =\ pq - (p + q) + 1\ =\ n - (p + q) + 1\ =\ n - (\\frac{{n}}{{q}} + q) + 1'))
         display(Math(f"{eu_phi} = {n} - \\biggl( \\frac{{{n}}}{{q}} + q \\biggl) +1 \ \\Rightarrow \ q^2 +{eu_phi - n if eu_phi - n >= 0 else f'({eu_phi - n - 1})'} \cdot q + {n} = 0"))
         display(Math("Solve \ for \ q"))
         display(Math(f"q = {solved[0]}, \ p = {solved[1]}"))
@@ -802,6 +804,69 @@ def bayes(fpr, fnr, verb, steps = False): #oder 1-spezifität, 1-sensitivität, 
     print("abs. wahrscheinlichkeit für pos. Ereignis:", abs_pos)
     print("abs. wahrscheinlichkeit für neg. Ereignis:", abs_neg)
 
+
+def bayes_dmath(n: int, party1: dict, party2: dict, error_subscript: str, steps=False):
+    """Implementierung von Bayes rule mit angpassbaren Namen. Ausgelegt für Dmath
+    
+    Args:
+      n: anzahl der Testobjekte
+      party1: dictionary mit Namen der ersten Party und einem tupel für (Anzahl der Elemente von Party 1, Anzahl defekte der Party 1)
+      party1: dictionary mit Namen der zweiten Party und einem tupel für (Anzahl der Elemente von Party 2, Anzahl defekte der Party 2)
+      error_subscript: bezeichnung für den Error bzw, bedinte Wahrscheinlichkeit
+      
+    Returns:
+      alle möglichen chancen nach erfolgtem Test"""
+    k_1 = None
+    v_1 = None
+    for k, v in party1.items():
+        k_1 = k
+        v_1 = v 
+
+    k_2 = None
+    v_2 = None
+    for k, v in party2.items():
+        k_2 = k
+        v_2 = v 
+    
+    # Normalisieren anhand von n
+    chance_p1 = round(v_1[0] / n, 13)
+    chance_p2 = round(v_2[0] / n, 13)
+    chance_error_p1 = round(v_1[1] / v_1[0], 13)
+    chance_error_p2 = round(v_2[1] / v_2[0], 13)
+
+    fpr = chance_error_p2
+    fpr_frac = f"\\frac{{{round(v_2[1], 13)}}}{{{round(v_2[0], 13)}}}" 
+    fnr = 1 - chance_error_p1
+    fnr_frac = f"\\frac{{{round(v_1[0] - v_1[1], 13)}}}{{{round(v_1[0], 13)}}}" 
+    sensitivity = 1-fnr
+    sens_frac = f"\\frac{{{round(v_1[1], 13)}}}{{{round(v_1[0], 13)}}}"
+    spezifitaet = 1-fpr
+    spez_frac = f"\\frac{{{round(v_2[0] - v_2[1], 13)}}}{{{round(v_2[0], 13)}}}"
+
+    bayes_pos= round(sensitivity * chance_p1 / (sensitivity * chance_p1 + fpr * (1-chance_p1)), 13)
+    bayes_neg = round(spezifitaet * (1-chance_p1) / (spezifitaet * (1-chance_p1) + fnr * chance_p1), 13)
+    abs_pos = round(chance_p1 * sensitivity + (1-chance_p1) * fpr, 13)
+    abs_neg = round(chance_p1 * fnr + (1-chance_p1) * spezifitaet,13)
+
+    if steps:
+        display(Math("Bayes\ Rule:\ P(A|B)\ =\ \\frac{P(B|A)*P(A)}{P(B)}"))
+        print()
+        display(Math(f"P({k_1}|{error_subscript})\ =>\ \\frac{{{f'{sens_frac} * {chance_p1}'}}}{{{f'{sens_frac} * {(chance_p1)} + {fpr_frac} * {round(1 - chance_p1, 13)}'}}}\ =\ {bayes_pos}"))
+        display(Math(f"P({k_2}|{error_subscript})\ =>\ 1-{bayes_pos}\ =\ {round(1 - bayes_pos, 13)}"))
+        print()
+        display(Math(f"P({k_2}|\\neg {error_subscript})\ =>\ \\frac{{{f'{spez_frac} * {round(1 - chance_p1, 13)}'}}}{{{f'{spez_frac} * {(round(1 - chance_p1, 13))} + {fnr_frac} * {chance_p1}'}}}\ =\ {bayes_neg}"))
+        display(Math(f"P({k_1}|\\neg {error_subscript})\ =>\ 1-{bayes_neg}\ =\ {round(1 - bayes_neg, 13)}"))
+        print()
+        display(Math(f"P({error_subscript})\ =>\ {chance_p1}*{sens_frac}+{round(1 - chance_p1, 13)}*{fpr_frac}\ =\ {abs_pos}"))
+        display(Math(f"P(\\neg {error_subscript})\ =>\ {chance_p1}*{fnr_frac}+{round(1 - chance_p1, 13)}*{spez_frac}\ =\ {abs_neg}"))
+
+    if not steps:
+        print("chance nach pos. test wenn wirklich pos:", bayes_pos)
+        print("chance nach neg. test wenn wirklich neg.:", bayes_neg)
+        print("chance nach pos. test wenn NICHT pos:", 1-bayes_pos)
+        print("chance nach neg. test wenn NICHT neg.:", 1-bayes_neg)
+        print("abs. wahrscheinlichkeit für pos. Ereignis:", abs_pos)
+        print("abs. wahrscheinlichkeit für neg. Ereignis:", abs_neg)
 
 
 def sma(n, p, m, steps=False):
