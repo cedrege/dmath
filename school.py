@@ -714,6 +714,9 @@ def small_fermat(a: int,b: int,x: int, steps=False):
       sonst: False
       
     """
+    if b <= x:
+        raise ValueError("exponent has to be bigger than mod")
+
     if check_prime(x):
         new_exp = b // (x-1)
         exp_rest = b % (x-1)
