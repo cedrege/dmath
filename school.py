@@ -1504,6 +1504,9 @@ def derangements(n, steps=False):
       
     Returns:
       anzahl der möglichen Derangements"""
+    if steps:
+        display(Math(f"{n}!\ *\ \sum\limits_{{k = 0}}^{{{n}}} \\frac{{(-1)^k}}{{k!}}"))
+    
     text=""
     text_refined=""
     a = 0
@@ -1524,7 +1527,7 @@ def derangements(n, steps=False):
                     text_refined += f"-\ \\frac{{{fac(n)}}}{{{fac(i)}}}\ "
     if steps:
         display(Math(text))
-        display(Math(text_refined))
+        display(Math(f"{text_refined}\ =\ {a}"))
     return a
 
 
