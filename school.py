@@ -714,6 +714,9 @@ def small_fermat(a: int,b: int,x: int, steps=False):
       sonst: False
       
     """
+    if b <= x:
+        raise ValueError("exponent has to be bigger than mod")
+
     if check_prime(x):
         new_exp = b // (x-1)
         exp_rest = b % (x-1)
@@ -1501,6 +1504,9 @@ def derangements(n, steps=False):
       
     Returns:
       anzahl der möglichen Derangements"""
+    if steps:
+        display(Math(f"{n}!\ *\ \sum\limits_{{k = 0}}^{{{n}}} \\frac{{(-1)^k}}{{k!}}"))
+    
     text=""
     text_refined=""
     a = 0
@@ -1521,7 +1527,7 @@ def derangements(n, steps=False):
                     text_refined += f"-\ \\frac{{{fac(n)}}}{{{fac(i)}}}\ "
     if steps:
         display(Math(text))
-        display(Math(text_refined))
+        display(Math(f"{text_refined}\ =\ {a}"))
     return a
 
 
